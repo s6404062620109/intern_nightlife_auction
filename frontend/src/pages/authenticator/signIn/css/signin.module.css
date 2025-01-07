@@ -1,0 +1,82 @@
+.container{
+    background: white;
+    border-radius: 20px;
+    width: 600px;
+    height: 400px;
+    position: relative;
+    box-shadow: 6px 5px 10px rgba(0, 0, 0, 0.25);
+}
+
+.container-wrap{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.head{
+    text-align: center;
+    font-size: 24px;
+}
+
+.container-wrap > form,
+.container form > div,
+.input-body > div,
+.input-footer > div{
+    display: flex;
+    flex-direction: column;
+}
+
+.container-wrap > form{
+    gap: 40px;
+}
+
+.input-body > div{
+    input[type="email"], 
+    input[type="password"],
+    input[type="text"]
+    {
+        height: 30px;
+        border: none;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.25);
+        border-radius: 0;
+        transition: border-color 0.3s ease;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+        outline: none;
+        border-bottom-color: #007bff;
+    }
+}
+
+.input-footer{
+    width: 80%;
+    margin: auto;
+}
+.input-footer > label{
+    text-align: center;
+}
+.input-footer > input[type="submit"]{
+    height: 30px;
+    border-radius: 10px;
+    border: 0.5px solid;
+    color: white;
+    background: #dc26c3;
+}
+.input-footer > input[type="submit"]:hover{
+    border: none;
+    border: 0.5px solid #b3b3b3;
+    box-shadow: 6px 5px 10px rgba(0, 0, 0, 0.25);
+}
+
+.input-body, .input-footer{
+    gap: 6px;
+}
