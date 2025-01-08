@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import backend from '../../../api/backend';
 
 import style from "./css/signup.module.css";
 
@@ -10,14 +11,36 @@ function SignUp() {
     cpassword: "",
     name: "",
   });
+  const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (userData.password === userData.cpassword) {
-      console.log(userData);
-    } else {
+    if (userData.password !== userData.cpassword) {
       alert("Password not matching!");
+      
+    } 
+    else {
+      const postUserData = async () =>{
+        try{
+          const response = await backend.post('/auth/register', {
+            email: userData.email,
+            password: userData.password,
+            name: userData.name
+          });
+
+          if(response.status === 201){
+            setMessage(response.data.message);
+          }
+        } catch (error){
+          console.log(error.response);
+          if(error.response.status === 400){
+            setMessage(error.response.data.message);
+          }
+        }
+      }
+      
+      postUserData();
     }
   };
   return (
@@ -36,6 +59,7 @@ function SignUp() {
                 onChange={(e) =>
                   setUsetData({ ...userData, email: e.target.value })
                 }
+                required
               />
             </div>
 
@@ -48,6 +72,7 @@ function SignUp() {
                 onChange={(e) =>
                   setUsetData({ ...userData, password: e.target.value })
                 }
+                required
               />
             </div>
 
@@ -60,6 +85,7 @@ function SignUp() {
                 onChange={(e) =>
                   setUsetData({ ...userData, cpassword: e.target.value })
                 }
+                required
               />
             </div>
 
@@ -72,13 +98,14 @@ function SignUp() {
                 onChange={(e) =>
                   setUsetData({ ...userData, name: e.target.value })
                 }
+                required
               />
             </div>
           </div>
 
           <div className={style["input-footer"]}>
             <input type="submit" value="Sign Up" />
-            <label>Status</label>
+            <label>{message}</label>
           </div>
         </form>
 

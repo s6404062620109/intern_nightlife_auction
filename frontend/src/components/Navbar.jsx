@@ -1,10 +1,51 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import backend from '../api/backend';
 
 import style from './css/navbar.module.css';
 
 function Navbar() {
+    const [user, setUser] = useState({
+        email: null,
+        name: null,
+        role: null,
+        coin: null
+    });
     const navigate = useNavigate();
+    const token = localStorage.getItem('authToken');
+    const decodeAuthToken = async (token) => {
+        if(!token){
+          console.log('Not authentication.');
+          return
+        }
+        else{
+          try{
+            const response = await backend.get('/auth/authorization', {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              } 
+            });
+    
+            if(response.status === 200){
+                const userData = response.data;
+              
+                setUser({
+                    email: userData.email,
+                    name: userData.name,
+                    role: userData.role,
+                    coin: userData.coin
+                });
+            }
+    
+          } catch (error) {
+            console.log(error);
+          }
+        }
+    }
+      
+    useEffect(() => {
+        decodeAuthToken(token);
+    }, [token])
 
   return (
     <nav>
@@ -21,11 +62,18 @@ function Navbar() {
                 <p>Venue</p>
             </div>
 
-            <div className={style["link-wrap"]}
+            {user.name ? (
+                <div className={style["user-info"]}>
+                    <p>{user.name}</p>
+                </div>
+            ):(
+                <div className={style["link-wrap"]}
                 onClick={() => navigate('/signin')}
-            >
-                <p>Sign in</p>
-            </div>
+                >
+                    <p>Sign in</p>
+                </div>
+            )}
+            
         </div>
     </nav>
   )
