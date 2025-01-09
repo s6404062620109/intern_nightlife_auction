@@ -19,6 +19,22 @@ app.get('/', (req, res) => {
 const authRoutes = require('./routes/authRoutes');
 app.use('/auth', authRoutes);
 
+// venue enpoints
+const venueRoutes = require('./routes/venueRoutes');
+app.use('/venue', venueRoutes);
+
+// table enpoints
+const tableRoutes = require('./routes/tableRoutes');
+app.use('/table', tableRoutes);
+
+// auction enpoints
+const auctionRoutes = require('./routes/auctionRoutes');
+app.use('/auction', auctionRoutes);
+
+// bid enpoints
+const bidRoutes = require('./routes/bidRoutes');
+app.use('/bid', bidRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
