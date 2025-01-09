@@ -35,6 +35,9 @@ app.use('/auction', auctionRoutes);
 const bidRoutes = require('./routes/bidRoutes');
 app.use('/bid', bidRoutes);
 
+const imgRoutes = require('./routes/imgRoutes');
+app.use('/img', imgRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

@@ -1,0 +1,10 @@
+.container{
+    width: 80%;
+    margin: auto;
+}
+.wrap{
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    margin: auto;
+    gap: 20px;
+}
