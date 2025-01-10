@@ -73,15 +73,19 @@ function VenueDetail() {
         fetchTablesVenue();
         fetchBannerImg();
     }, [venueData]);
-
-    const navigateToAuction = (id) => {
+    
+    const handleSubmit = (id) => {
 
         if(!token){
             alert("Please Sign In before Auction");
             navigate('/signin');
             return;
         }
-        navigate(`/auction/${id}`);
+
+        if(tableSelected){
+            navigate(`/auction/${id}`);
+        }
+        
     } 
   return (
     <div className={style.container}>
@@ -93,15 +97,38 @@ function VenueDetail() {
                 />
             </div>
             <div className={style.infoBox}>
-                <h2>Name: {venueData.name}</h2>
-                <p>Location: {venueData.address}</p>
+                <div className={style.info}>
+                    <h2>Name: {venueData.name}</h2>
+                    <p>Location: {venueData.address}</p>
+                </div>
 
-
-                <button
-                    onClick={() => navigateToAuction()}
+                <form 
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSubmit(tableSelected);
+                    }}
                 >
-                    เข้าร่วมประมูลโต็ะ
-                </button>
+                    <h3>ประมูลโต็ะสำหรับเข้าร่วม</h3>
+                    <select
+                        onChange={(e) => setTableSelected(e.target.value)}
+                        value={tableSelected}
+                    >
+                        <option value="">Select a table</option>
+                        {tableData.map((item) => (
+                            <option 
+                                key={item._id} 
+                                value={item._id}
+                            >
+                                {item.name}
+                            </option>
+                        ))}
+                    </select>
+
+                    <input
+                        type='submit'
+                        value='เข้าร่วมประมูลโต็ะ'
+                    />
+                </form>
             </div>
         </div>
     </div>

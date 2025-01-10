@@ -6,6 +6,10 @@ const TableSchema = new mongoose.Schema(
         type: Number, 
         required: true
     },
+    name: { 
+      type: String, 
+      required: true
+    },
     venueId: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: "venues", 

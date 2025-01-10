@@ -5,18 +5,22 @@ require('dotenv').config();
 const router = express.Router();
 
 router.post('/post', async (req, res) => {
-    const { seats, venueId } = req.body;
+    const { seats, name, venueId } = req.body;
   
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
     }
 
-    if(!seats || !venueId){
-        return res.status(400).json({ message: 'Seats and venueId are required.' });
+    if(!seats || !name || !venueId ){
+        return res.status(400).json({ message: 'Seats, name and venueId are required.' });
     }
 
     if(typeof seats !== 'number'){
         return res.status(400).json({ message: 'Seats must be a number.' });
+    }
+
+    if(typeof name !== 'string'){
+        return res.status(400).json({ message: 'Name must be a string.' });
     }
 
     if(typeof venueId !== 'string'){
@@ -26,6 +30,7 @@ router.post('/post', async (req, res) => {
     try {
         const newTable = new Table({
             seats,
+            name,
             venueId
         });
         await newTable.save();
@@ -109,7 +114,7 @@ router.get('/readByVenueId/:venueId', async (req, res) => {
 });
 
 router.put('/update', async (req, res) => {
-    const { id, seats, venueId } = req.body;
+    const { id, seats, name, venueId } = req.body;
 
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
@@ -131,6 +136,12 @@ router.put('/update', async (req, res) => {
             return res.status(400).json({ message: 'VenueId must be a string.' });
         }
         updateFields.venueId = venueId;
+    }
+    if (name) {
+        if(typeof name !== 'string'){
+            return res.status(400).json({ message: 'Name must be a string.' });
+        }
+        updateFields.name = name;
     }
 
     if (Object.keys(updateFields).length === 0) {
