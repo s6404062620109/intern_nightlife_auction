@@ -16,7 +16,7 @@ function Navbar() {
     const decodeAuthToken = async (token) => {
       if(!token){
         console.log('Not authentication.');
-        navigate('/signin');
+        localStorage.removeItem('authToken');
       }
       else{
         try{

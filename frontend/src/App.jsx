@@ -8,6 +8,7 @@ import Auction from './pages/auction';
 import Signin from './pages/authenticator/signIn/index';
 import SignUp from './pages/authenticator/signUp';
 import VenueDetail from './pages/venueDetails';
+import Bidauction from './pages/bidAuction';
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <Route path='/venue' element={<Venue/>}/>
           <Route path='/venuedetail/:id' element={<VenueDetail/>}/>
           <Route path='/auction/:tableId' element={<Auction/>}/>
+          <Route path='/auction/:tableId/bidauction/:auctionId' element={<Bidauction/>}/>
           <Route path='/signin' element={<Signin/>}/>
           <Route path='/signup' element={<SignUp/>}/>
         </Routes>

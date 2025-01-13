@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import backend from '../api/backend';
 
-import style from './css/venue.module.css';
+import style from './css/venuecard.module.css';
 
 function venueCard({ id, name, banner }) {
     const [imgPath, setImgPath] = useState(``);
