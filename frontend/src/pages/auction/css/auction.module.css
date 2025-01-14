@@ -40,6 +40,10 @@
     cursor: pointer;
 }
 
+.auction-box{
+    width: 100%;
+}
+
 .auction-Btn {
     display: flex;
     align-items: center;
@@ -63,7 +67,7 @@
 
 .auction-detail {
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
     padding: 10px 15px;
     background: #fafafa;
     border: 1px solid #ddd;
@@ -74,13 +78,22 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.auction-detail p {
+.auction-detail > div{
+    display: flex;
+    justify-content: space-between;
+}
+
+.auction-detail div > p {
     color: black;
     margin: 5px 0;
     line-height: 1.4;
     label{
         color: grey;
     }
+}
+
+.auction-detail div > p:nth-child(2){
+    text-align: center;
 }
 
 button {

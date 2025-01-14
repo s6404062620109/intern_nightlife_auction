@@ -55,30 +55,49 @@ function Auction() {
             <tr key={date} className={style.dateGroup}>
               <td>
                 {auctions.map((item) => (
-                  <div key={item._id}>
+                  <div key={item._id} className={style["auction-box"]}>
                     <div
                       className={style["auction-Btn"]}
                       onClick={() => toggleAuctionDetails(item._id)}
                     >
-                    <h2>{date}</h2>
-                    {activeAuctionId === item._id ? '▲' : '▼'}
+                      <h2>{date}</h2>
+                      {activeAuctionId === item._id ? 'รายละเอียดการประมูล ▲' : 'รายละเอียดการประมูล ▼'}
                     </div>
                     {activeAuctionId === item._id && (
                       <div className={style["auction-detail"]}>
-                        <p>
-                          Start: 
-                          <label>
-                            {new Date(item.checkpoint.start).toLocaleTimeString()}
-                          </label>
-                        </p>
-                        <p>
-                          End: 
-                          <label>
-                            {new Date(item.checkpoint.end).toLocaleTimeString()}
-                          </label>
-                        </p>
+                        <div>
+                          <p>
+                            Start: 
+                            <label>
+                              {new Date(item.checkpoint.start).toLocaleTimeString()}
+                            </label>
+                          </p>
+                          <p>
+                            End: 
+                            <label>
+                              {new Date(item.checkpoint.end).toLocaleTimeString()}
+                            </label>
+                          </p>
+                        </div>
+
+                        <div>
+                          <p>
+                            ราคาเริ่มต้น: 
+                            <label>
+                              {item.rules.startCoins} Coin
+                            </label>
+                          </p>
+
+                          <p>
+                            อัตราราคาบิท: 
+                            <label>
+                              {item.rules.bidRateCoins} Coin
+                            </label>
+                          </p>
+                        </div>
                       </div>
                     )}
+
                   </div>
                 ))}
               </td>
