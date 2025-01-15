@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import style from './css/venueDetail.module.css';
 import backend from '../../api/backend';
+import AuctionTable from '../../components/AuctionTable';
 
 function VenueDetail() {
     const { id } = useParams();
@@ -20,8 +21,6 @@ function VenueDetail() {
     const [ tableData, settableData ] = useState([]);
     const [ tableSelected, setTableSelected ] = useState("");
     const [imgPath, setImgPath] = useState(``);
-    const token = localStorage.getItem('authToken');
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchVenueData = async () => {
@@ -73,20 +72,9 @@ function VenueDetail() {
         fetchTablesVenue();
         fetchBannerImg();
     }, [venueData]);
-    
-    const handleSubmit = (id) => {
 
-        if(!token){
-            alert("Please Sign In before Auction");
-            navigate('/signin');
-            return;
-        }
+    const closePopup = () => setTableSelected('');
 
-        if(tableSelected){
-            navigate(`/auction/${id}`);
-        }
-        
-    } 
   return (
     <div className={style.container}>
         <div className={style.venueCard}>
@@ -103,12 +91,15 @@ function VenueDetail() {
                 </div>
 
                 <form 
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        handleSubmit(tableSelected);
-                    }}
+                    onSubmit={(e) => e.preventDefault()}
                 >
-                    <h3>ประมูลโต็ะสำหรับเข้าร่วม</h3>
+                    <h3>Table Plan</h3>
+
+                    <img
+                        alt='Table plan'
+                        src='/Schema-table_plan.drawio.png'
+                    />
+
                     <select
                         onChange={(e) => setTableSelected(e.target.value)}
                         value={tableSelected}
@@ -123,14 +114,31 @@ function VenueDetail() {
                             </option>
                         ))}
                     </select>
-
-                    <input
-                        type='submit'
-                        value='เข้าร่วมประมูลโต็ะ'
-                    />
                 </form>
+         
             </div>
         </div>
+        
+        {tableSelected && (
+            <>
+                <div
+                    className={`${style.overlay} ${tableSelected ? style.show : ''}`}
+                    onClick={closePopup}
+                ></div>
+                <div
+                    className={`${style['auction-table-wrap']} ${tableSelected ? style.show : ''}`}
+                    >
+                    <img
+                        alt='Close button'
+                        src='/Close_round.svg'
+                        onClick={closePopup} 
+                        className={style.closeButton}
+                    />
+                    <AuctionTable tableId={tableSelected} />
+                </div>
+            </>
+        )}
+        
     </div>
   )
 }

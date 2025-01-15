@@ -17,15 +17,9 @@ const AuctionSchema = new mongoose.Schema(
             require: true
         },
     },
-    rules: {
-        startCoins: {
-            type: Number,
-            require: true
-        },
-        bidRateCoins: {
-            type: Number,
-            require: true
-        }
+    startCoins: {
+        type: Number,
+        require: true
     },
   },
   { timestamps: true }

@@ -7,14 +7,14 @@ require('dotenv').config();
 const router = express.Router();
 
 router.post('/post', async (req, res) => {
-    const { offerBid, time, offerId, auctionId } = req.body;
+    const { offerBid, offerId, auctionId } = req.body;
   
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
     }
 
-    if(!offerBid || !time || !offerId || !auctionId ){
-        return res.status(400).json({ message: 'OfferBid, time, offerId and auctionId are required.' });
+    if(!offerBid || !offerId || !auctionId ){
+        return res.status(400).json({ message: 'OfferBid, offerId and auctionId are required.' });
     }
 
     if (typeof offerBid !== 'number') {
@@ -29,7 +29,7 @@ router.post('/post', async (req, res) => {
         return res.status(400).json({ message: 'auctionId must be a string.' });
     }
 
-    const datetime = new Date(time);
+    const datetime = new Date();
 
     if (isNaN(datetime.getTime())) {
         return res.status(400).json({ message: 'Invalid time format. Must be a valid date-time string.' });
@@ -39,32 +39,75 @@ router.post('/post', async (req, res) => {
 
         const finduser = await User.findById(offerId);
         const findauction = await Auction.findById(auctionId);
-        
+
         if(!finduser){
             return res.status(404).json({ message: 'Not found User.' });
         }
         if(!findauction){
             return res.status(404).json({ message: 'Not found Auction.' });
         }
+ 
+        const auctionStart = new Date(findauction.checkpoint.start).getTime();
+        const auctionEnd = new Date(findauction.checkpoint.end).getTime();
+        const comparetime  = datetime.getTime();
 
-        if(offerBid < findauction.rules.startCoins){
-            return res.status(401).json({ message: `Please bid more than minimum ${findauction.rules.startCoins}` })
+        if (isNaN(auctionStart) || isNaN(auctionEnd)) {
+            return res.status(500).json({ message: 'Invalid auction checkpoint dates.' });
         }
-        if(offerBid > findauction.rules.startCoins){
-            if((offerBid-findauction.rules.startCoins) < findauction.rules.bidRateCoins){
-                return res.status(401).json({ message: `Please bid more than minimum ${findauction.rules.startCoins} + bid rate ${findauction.rules.bidRateCoins}` });
+        
+        if (comparetime < auctionStart) {
+            return res.status(400).json({ message: 'Auction has not started yet.' });
+        }
+        
+        if (comparetime > auctionEnd) {
+            return res.status(400).json({ message: 'Auction has already ended.' });
+        }
+
+        const maxBidRecord = await BidHistory.findOne({ auctionId }).sort({ offerBid: -1 }).select('offerBid');
+        const maxBid = maxBidRecord ? maxBidRecord.offerBid : 0;
+        
+        if(offerBid < findauction.startCoins){
+            return res.status(401).json({ message: `Please bid more than minimum ${findauction.startCoins}` })
+        }
+
+        if(offerBid > findauction.startCoins){
+            if(maxBid !== 0 && offerBid <= maxBid){
+                return res.status(401).json({ message: `Please bid more than current bid value ${maxBid} + ${findauction.startCoins}` });
+            }
+            if(offerBid > maxBid && offerBid < maxBid+findauction.startCoins){
+                return res.status(401).json({ message: `Please bid more than current bid value ${maxBid} + ${findauction.startCoins}` });
             }
         }
 
+        const oneMinuteAgo = new Date(datetime.getTime() - 60 * 1000);
+        const recentBid = await BidHistory.findOne({
+            auctionId,
+            offerId,
+            time: { $gte: oneMinuteAgo }
+        });
+
+        if (recentBid) {
+            return res.status(400).json({ message: 'You cannot place another bid within 1 minute.' });
+        }
+
+        const existingBid = await BidHistory.findOne({ auctionId, offerBid });
+        if (existingBid) {
+            const existingTime = new Date(existingBid.time).getTime();
+            if (comparetime === existingTime) {
+                return res.status(400).json({ message: 'A bid with the same offerBid and time already exists.' });
+            }
+        }
+        
         const newBidHistory = new BidHistory({
             offerBid,
-            time,
+            time: datetime,
             offerId,
             auctionId
         });
         await newBidHistory.save();
-  
+      
         res.status(200).json({ newBidHistory });
+        
     } 
     catch (error) {
       res.status(500).json({ message: 'Error post bid history:', error });

@@ -6,14 +6,14 @@ require('dotenv').config();
 const router = express.Router();
 
 router.post('/post', async (req, res) => {
-    const { tableId, startTime, endTime, startCoins, bidRateCoins } = req.body;
+    const { tableId, startTime, endTime, startCoins } = req.body;
   
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
     }
 
-    if(!tableId || !startTime || !endTime || !startCoins || !bidRateCoins){
-        return res.status(400).json({ message: 'TableId, startTime, endTime, startCoins and bidRateCoins are required.' });
+    if(!tableId || !startTime || !endTime || !startCoins){
+        return res.status(400).json({ message: 'TableId, startTime, endTime and startCoins are required.' });
     }
 
     if (typeof tableId !== 'string') {
@@ -22,10 +22,6 @@ router.post('/post', async (req, res) => {
 
     if (typeof startCoins !== 'number') {
         return res.status(400).json({ message: 'StartCoins must be a number.' });
-    }
-    
-    if (typeof bidRateCoins !== 'number') {
-        return res.status(400).json({ message: 'BidRateCoins must be a number.' });
     }
 
     const start = new Date(startTime);
@@ -56,10 +52,7 @@ router.post('/post', async (req, res) => {
                 start: startTime,
                 end: endTime
             },
-            rules: {
-                startCoins: startCoins,
-                bidRateCoins: bidRateCoins
-            }
+            startCoins,
         });
         await newAuction.save();
   
@@ -142,7 +135,7 @@ router.get('/readByTableId/:tableId', async (req, res) => {
 });
 
 router.put('/update', async (req, res) => {
-    const { id, tableId, startTime, endTime, startCoins, bidRateCoins } = req.body;
+    const { id, tableId, startTime, endTime, startCoins } = req.body;
 
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
@@ -163,13 +156,7 @@ router.put('/update', async (req, res) => {
         if (typeof startCoins !== 'number') {
             return res.status(400).json({ message: 'StartCoins must be a number.' });
         }
-        updateFields['rules.startCoins'] = startCoins;
-    }
-    if (bidRateCoins) {
-        if (typeof bidRateCoins !== 'number') {
-            return res.status(400).json({ message: 'BidRateCoins must be a number.' });
-        }
-        updateFields['rules.bidRateCoins'] = bidRateCoins;
+        updateFields['startCoins'] = startCoins;
     }
 
     if (startTime){

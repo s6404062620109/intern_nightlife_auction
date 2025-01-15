@@ -6,10 +6,11 @@ import style from './css/navbar.module.css';
 
 function Navbar() {
     const [user, setUser] = useState({
-        email: null,
-        name: null,
-        role: null,
-        coin: null
+      id: null,
+      email: null,
+      name: null,
+      role: null,
+      coin: null
     });
     const navigate = useNavigate();
     const token = localStorage.getItem('authToken');
@@ -17,6 +18,7 @@ function Navbar() {
       if(!token){
         console.log('Not authentication.');
         localStorage.removeItem('authToken');
+        navigate('/');
       }
       else{
         try{
@@ -30,6 +32,7 @@ function Navbar() {
             const userData = response.data;
               
             setUser({
+              id: userData.id,
               email: userData.email,
               name: userData.name,
               role: userData.role,
