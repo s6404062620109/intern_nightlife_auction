@@ -14,9 +14,11 @@ function Bidauction() {
   });
   const token = localStorage.getItem('authToken');      
   const { tableId, auctionId } = useParams();
-  const [ auctionData, setAuctionData ] = useState({});
+  const [ bidHistory, setBidHistory ] = useState([]);
   const [ tableData, setTableData ] = useState({});
   const [ bidValue, setBidValue ] = useState(0);
+  const [bitRate, setBitRate] = useState([10, 100, 1000, -10, -100, -1000]);
+  const [selectedRate, setSelectedRate] = useState(bitRate[0]);
   const [ bidStatus, setBidStatus ] = useState("");
   const decodeAuthToken = async (token) => {
     if(!token){
@@ -55,12 +57,13 @@ function Bidauction() {
   }, [token]);
 
   useEffect(() => {
-    const fetchAuction = async () => {
+    const fetchBidHistory = async () => {
       try{
-        const response = await backend.get(`/auction/readById/${auctionId}`);
+        const response = await backend.get(`/bid/readByAuction/${auctionId}`);
 
         if(response.status === 200){
-          setAuctionData(response.data.data);
+          const sortedBids = response.data.data.sort((a, b) => b.offerBid - a.offerBid);
+          setBidHistory(sortedBids);
         }
       } catch(error) {
         console.log(error);
@@ -79,20 +82,8 @@ function Bidauction() {
     }
 
     fetchTable();
-    fetchAuction();
+    fetchBidHistory();
   }, [auctionId]);
-
-  const handleBid = (act) => {
-    if(act === "plus"){
-      setBidValue(bidValue+auctionData.startCoins);
-    }
-
-    if(act === "minus"){
-      if(bidValue !== 0){
-        setBidValue(bidValue-auctionData.startCoins);
-      }
-    }
-  }
 
   const handleSubmitBid = async () => {
     try{
@@ -113,37 +104,82 @@ function Bidauction() {
     }
   }
 
+  const handleBidRateChange = (e) => {
+    const rate = parseInt(e.target.value, 10);
+    setSelectedRate(rate);
+  };
+
+  const handleApplyRate = () => {
+    setBidValue((prevValue) => Math.max(0, prevValue + selectedRate));
+  };
+
   return (
     <div className={style.container}>
       <div className={style["card-wrap"]}>
 
         <div className={style.head}>
-          <h2>
-            Table name  
-            {tableData.name}
-          </h2>
+          <h2>Table name:</h2>
+          <p>{tableData.name}</p>
         </div>
 
-        <div className={style.content}>
-          {/* ranking bid here */}
-          <div>Not have current bid here.</div>
+        <div className={`${style.content} ${style.scrollable}`}>
+          <table className={style['bid-table']}>
+            <thead>
+              <tr>
+                <th>Bid Value</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bidHistory.length > 0 ? (
+                bidHistory.map((bid, index) => (
+                  <tr key={bid._id}>
+                    <td>{bid.offerBid}</td>
+                    <td>{new Date(bid.time).toLocaleString()}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4">No bids yet.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className={style["currentBid-wrap"]}>
+          <p>Current Value :</p>
+          {bidHistory.length > 0 ? ( // Check if bidHistory has at least one item
+            <>
+              <p>{bidHistory[0].offerBid}</p>
+              <p>Coins</p>
+            </>
+          ) : (
+            <p>No bids yet</p>
+          )}
         </div>
 
         <div className={style["bid-wrap"]}>
           <div className={style["value-wrap"]}>
-            <img
-              alt='Minus bid value'
-              src='/Remove_duotone.svg'
-              onClick={() => handleBid("minus")}
-            />
-
-            <p>{bidValue}</p>
-
-            <img
-              alt='Plus bid value'
-              src='/Add_round_duotone.svg'
-              onClick={() => handleBid("plus")}
-            />
+            <select
+              value={selectedRate}
+              onChange={handleBidRateChange}
+              className={style['rate-selector']}
+            >
+              <option value={0}>0</option>
+              {bitRate.map((rate) => (
+                <option key={rate} value={rate}>
+                  {rate > 0 ? `+${rate}` : rate}
+                </option>
+              ))}
+            </select>
+            <button onClick={handleApplyRate} className={style['apply-button']}>
+              Bid rate
+            </button>
+            
+            <div className={style["bidValue-wrap"]}>
+              <p>{bidValue}</p>
+            </div>
           </div>
 
           <div className={style["button-wrap"]}>

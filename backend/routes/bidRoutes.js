@@ -67,12 +67,12 @@ router.post('/post', async (req, res) => {
         const maxBid = maxBidRecord ? maxBidRecord.offerBid : 0;
         
         if(offerBid < findauction.startCoins){
-            return res.status(401).json({ message: `Please bid more than minimum ${findauction.startCoins}` })
+            return res.status(401).json({ message: `Please bid more than minimum ${findauction.startCoins} Coins.` })
         }
 
         if (maxBid !== 0) {
-            if (offerBid <= maxBid || offerBid < maxBid + findauction.startCoins) {
-                return res.status(401).json({ message: `Please bid more than current + minimum bid value ${maxBid + findauction.startCoins}` });
+            if (offerBid <= maxBid) {
+                return res.status(401).json({ message: `Please bid more than current bid value ${maxBid} Coins.` });
             }
         }
 
@@ -141,6 +141,33 @@ router.get('/readById/:id', async (req, res) => {
     
     try {
         const BidHistoryGet = await BidHistory.findById(id);
+
+        if(!BidHistoryGet){
+            res.status(409).json({ message: "Bid history not found." });
+        }
+        else{
+            res.status(200).json({ data: BidHistoryGet });
+        }
+        
+    } 
+    catch (error) {
+      res.status(500).json({ message: 'Error get bid history:', error });
+    }
+});
+
+router.get('/readByAuction/:auctionId', async (req, res) => {
+    const { auctionId } = req.params;
+
+    if(!auctionId){
+        return res.status(400).json({ message: 'AuctionId are required.' });
+    }
+
+    if(typeof auctionId  !== 'string'){
+        return res.status(400).json({ message: 'AuctionId must be a string.' });
+    }
+    
+    try {
+        const BidHistoryGet = await BidHistory.find({ auctionId });
 
         if(!BidHistoryGet){
             res.status(409).json({ message: "Bid history not found." });

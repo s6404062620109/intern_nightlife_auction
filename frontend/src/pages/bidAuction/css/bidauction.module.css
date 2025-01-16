@@ -1,5 +1,5 @@
 .container{
-    width: 80%;
+    width: 60%;
     background: white;
     display: flex;
     justify-content: center;
@@ -10,6 +10,17 @@
     width: 80%;
     display: flex;
     flex-direction: column;
+}
+
+.head{
+    width: 250px;
+    margin: auto 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    p{
+        color: black;
+    }
 }
 
 .content{
@@ -24,9 +35,107 @@
     align-items: center;
 }
 
-.value-wrap{
-    display: flex;
+.content.scrollable {
+    max-height: 300px;
+    overflow-y: auto;
 }
-.value-wrap > p{
+  
+.bid-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+  
+.bid-table th, .bid-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+  
+.bid-table th {
+    background-color: #f4f4f4;
+}
+  
+
+.bid-wrap{
+    width: 80%;
+    height: 150px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.value-wrap{
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.bidValue-wrap{
+    display: flex;
+    justify-content: center;
+}
+.bidValue-wrap > p{
+    color: black;
+}
+
+.bidRate-wrap{
+    display: flex;
+    align-items: center;
+}
+
+.rate-selector {
+    margin-right: 10px;
+    padding: 5px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+}
+
+.rate-selector:hover {
+    border-color: #007bff;
+}
+
+.apply-button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.apply-button:hover {
+    background-color: #0056b3;
+}
+
+.button-wrap button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-wrap button:hover {
+    background-color: #218838;
+}
+
+.currentBid-wrap{
+    width: 300px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.currentBid-wrap > p{
     color: black;
 }
