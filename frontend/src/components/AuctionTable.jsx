@@ -47,7 +47,7 @@ function AuctionTable({ tableId }) {
     <table className={style.auctionTable}>
         <thead>
             <th>เวลาที่เปิดจอง</th>
-            <th>เริ่มต้น</th>
+            <th>ราคาเริ่มต้น</th>
             <th>เข้าร่วม</th>
         </thead>
 

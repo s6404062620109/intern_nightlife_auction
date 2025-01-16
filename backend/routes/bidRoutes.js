@@ -70,12 +70,9 @@ router.post('/post', async (req, res) => {
             return res.status(401).json({ message: `Please bid more than minimum ${findauction.startCoins}` })
         }
 
-        if(offerBid > findauction.startCoins){
-            if(maxBid !== 0 && offerBid <= maxBid){
-                return res.status(401).json({ message: `Please bid more than current bid value ${maxBid} + ${findauction.startCoins}` });
-            }
-            if(offerBid > maxBid && offerBid < maxBid+findauction.startCoins){
-                return res.status(401).json({ message: `Please bid more than current bid value ${maxBid} + ${findauction.startCoins}` });
+        if (maxBid !== 0) {
+            if (offerBid <= maxBid || offerBid < maxBid + findauction.startCoins) {
+                return res.status(401).json({ message: `Please bid more than current + minimum bid value ${maxBid + findauction.startCoins}` });
             }
         }
 
