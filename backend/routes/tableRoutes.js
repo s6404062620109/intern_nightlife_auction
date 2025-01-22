@@ -1,5 +1,6 @@
 const express = require('express');
 const Table = require('../schemas/tableSchema');
+const Venue = require('../schemas/venueSchema');
 require('dotenv').config();
 
 const router = express.Router();
@@ -28,6 +29,11 @@ router.post('/post', async (req, res) => {
     }
   
     try {
+        const venue = await Venue.findById(venueId);
+        if(!venue){
+            return res.status(400).json({ message: 'Not found venue.' });
+        }
+
         const newTable = new Table({
             seats,
             name,

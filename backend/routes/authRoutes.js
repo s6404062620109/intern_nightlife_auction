@@ -79,7 +79,6 @@ router.get('/verify-email', async (req, res) => {
   }
 });
 
-
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -91,6 +90,9 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
+    }
+    if (!user.verified){
+      return res.status(400).json({ message: 'Please verified your email.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -136,6 +138,33 @@ router.get('/authorization', async (req, res) => {
       console.log(error);
     }
     
+});
+
+router.get('/readByOwnerId/:id', async (req, res) => {
+  const { id } = req.params;
+
+  if(!id){
+      return res.status(400).json({ message: 'Id are required.' });
+  }
+
+  if(typeof id  !== 'string'){
+      return res.status(400).json({ message: 'Id must be a string.' });
+  }
+  
+  try {
+      const user = await User.findById(id);
+
+      if(!user){
+          res.status(409).json({ message: "User not found." });
+      }
+      else{
+          res.status(200).json({ data: user });
+      }
+      
+  } 
+  catch (error) {
+    res.status(500).json({ message: 'Error get user:', error });
+  }
 });
 
 module.exports = router;

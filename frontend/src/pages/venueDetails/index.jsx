@@ -7,16 +7,12 @@ import AuctionTable from '../../components/AuctionTable';
 
 function VenueDetail() {
     const { id } = useParams();
-    const [user, setUser] = useState({
-        email: null,
-        name: null,
-        role: null,
-        coin: null
-    });
     const [ venueData, setVenueData ] = useState({
         name: null,
         address: null,
-        banner: null
+        banner: null,
+        ownerId: null,
+        ownerName: null,
     });
     const [ tableData, settableData ] = useState([]);
     const [ tableSelected, setTableSelected ] = useState("");
@@ -29,10 +25,13 @@ function VenueDetail() {
 
                 if(response.status === 200){
                     let data = response.data.data;
+                    
                     setVenueData({
+                        ...venueData,
                         name: data.name,
                         address: data.address,
-                        banner: data.banner
+                        banner: data.banner,
+                        ownerId: data.ownerId
                     });
                 }
             } catch (error) {
@@ -41,6 +40,26 @@ function VenueDetail() {
         }
         fetchVenueData();
     }, [id]);
+
+    useEffect(() => {
+        const fetchOwner = async () => {
+            try{
+                const response = await backend.get(`/auth/readByOwnerId/${venueData.ownerId}`);
+
+                if(response.status === 200){
+                    let data = response.data.data;
+                    
+                    setVenueData({
+                        ...venueData,
+                        ownerName: data.name,
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchOwner();
+    }, [venueData.ownerId]);
 
     useEffect(() => {
         const fetchTablesVenue = async () => {
@@ -88,6 +107,7 @@ function VenueDetail() {
                 <div className={style.info}>
                     <h2>Name: {venueData.name}</h2>
                     <p>Location: {venueData.address}</p>
+                    <p>Owner: {venueData.ownerName}</p>
                 </div>
 
                 <form 

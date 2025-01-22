@@ -14,6 +14,11 @@ const VenueSchema = new mongoose.Schema(
         type: String, 
         require: true 
     },
+    ownerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+        require: true
+    }
   },
   { timestamps: true }
 );

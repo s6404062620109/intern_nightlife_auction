@@ -1,29 +1,38 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const Venue = require('../schemas/venueSchema');
+const User = require('../schemas/userSchema');
 require('dotenv').config();
 
 const router = express.Router();
 
 router.post('/post', async (req, res) => {
-    const { name, address, banner } = req.body;
+    const { name, address, banner, ownerId } = req.body;
   
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
     }
 
-    if(!name || !address || !banner){
-        return res.status(400).json({ message: 'name, address, banner are required.' });
+    if(!name || !address || !banner || !ownerId){
+        return res.status(400).json({ message: 'name, address, banner and ownerId are required.' });
     }
 
-    if(typeof name !== 'string' || typeof address !== 'string' || typeof banner !== 'string'){
-        return res.status(400).json({ message: 'name, address, banner must be a string.' });
+    if(typeof name !== 'string' || typeof address !== 'string' || typeof banner !== 'string' || typeof ownerId !== 'string'){
+        return res.status(400).json({ message: 'name, address, banner and ownerId must be a string.' });
     }
-  
+    
     try {
+        const findOwner = await User.findById(ownerId);
+
+        if(!findOwner){
+            return res.status(401).json({ message: 'Not found user.' });
+        }
+
         const newVenue = new Venue({
             name,
             address,
-            banner
+            banner,
+            ownerId
         });
         await newVenue.save();
   
@@ -80,14 +89,24 @@ router.get('/readById/:id', async (req, res) => {
 });
 
 router.put('/update', async (req, res) => {
-    const { id, name, address, banner } = req.body;
+    const { id, name, address, banner, ownerId } = req.body;
 
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
     }
 
-    if (!id || typeof id !== 'string') {
-        return res.status(400).json({ message: 'Id is required and must be a string.' });
+    if (!id || typeof id !== 'string' || !mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: 'Id is required and must be a valid ObjectId string.' });
+    }
+
+    if (!ownerId || typeof ownerId !== 'string' || !mongoose.Types.ObjectId.isValid(ownerId)) {
+        return res.status(400).json({ message: 'OwnerId is required and must be a valid ObjectId string.' });
+    }
+
+    const findOwner = await User.findById(ownerId);
+
+    if(!findOwner){
+        return res.status(401).json({ message: 'Not found user.' });
     }
 
     const updateFields = {};
