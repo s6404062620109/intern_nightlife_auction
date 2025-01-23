@@ -113,27 +113,31 @@ function VenueDetail() {
                 <form 
                     onSubmit={(e) => e.preventDefault()}
                 >
-                    <h3>Table Plan</h3>
 
+                    <h3>Table</h3>
                     <img
                         alt='Table plan'
                         src='/Schema-table_plan.drawio.png'
                     />
-
-                    <select
-                        onChange={(e) => setTableSelected(e.target.value)}
-                        value={tableSelected}
-                    >
-                        <option value="">Select a table</option>
-                        {tableData.map((item) => (
-                            <option 
-                                key={item._id} 
-                                value={item._id}
-                            >
-                                {item.name}
-                            </option>
-                        ))}
-                    </select>
+                    
+                    <div className={style["auction-select-wrap"]}>
+                        <p>Auction table: </p>
+                        <select
+                            onChange={(e) => setTableSelected(e.target.value)}
+                            value={tableSelected}
+                        >
+                            <option value="">Select a table</option>
+                            {tableData.map((item) => (
+                                <option 
+                                    key={item._id} 
+                                    value={item._id}
+                                >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    
                 </form>
          
             </div>

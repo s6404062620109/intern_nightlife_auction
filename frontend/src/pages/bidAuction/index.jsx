@@ -11,8 +11,7 @@ function Bidauction() {
     name: null,
     role: null,
     coin: null
-  });
-  const token = localStorage.getItem('authToken');      
+  });   
   const { tableId, auctionId } = useParams();
   const [ bidHistory, setBidHistory ] = useState([]);
   const [ tableData, setTableData ] = useState({});
@@ -20,18 +19,12 @@ function Bidauction() {
   const [bitRate, setBitRate] = useState([10, 100, 1000, -10, -100, -1000]);
   const [selectedRate, setSelectedRate] = useState(bitRate[0]);
   const [ bidStatus, setBidStatus ] = useState("");
-  const decodeAuthToken = async (token) => {
-    if(!token){
-      console.log('Not authentication.');
-      localStorage.removeItem('authToken');
-      navigate('/');
-    }
-    else{
+  
+  useEffect(() => {
+    const autherization = async () => {
       try{
         const response = await backend.get('/auth/authorization', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          } 
+          withCredentials: true
         });
   
         if(response.status === 200){
@@ -49,12 +42,9 @@ function Bidauction() {
         } catch (error) {
           console.log(error);
         }
-      }
-  }
-  
-  useEffect(() => {
-    decodeAuthToken(token);
-  }, [token]);
+    }
+    autherization();
+  }, []);
 
   useEffect(() => {
     const fetchBidHistory = async () => {

@@ -17,11 +17,13 @@ function SignIn() {
       const response = await backend.post('/auth/login', {
         email: userData.email,
         password: userData.password
+
+      },{
+        withCredentials: true
       });
 
       if(response.status === 200){
         setMessage(response.data.message);
-        localStorage.setItem('authToken', response.data.token);
         setTimeout(() => window.location.href = '/', 2000);
       }
     }

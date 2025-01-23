@@ -12,20 +12,13 @@ function Navbar() {
       role: null,
       coin: null
     });
-    const navigate = useNavigate();
-    const token = localStorage.getItem('authToken');
-    const decodeAuthToken = async (token) => {
-      if(!token){
-        console.log('Not authentication.');
-        localStorage.removeItem('authToken');
-        navigate('/');
-      }
-      else{
+    const navigate = useNavigate();  
+      
+    useEffect(() => {
+      const autherization = async () => {
         try{
           const response = await backend.get('/auth/authorization', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            } 
+            withCredentials: true
           });
     
           if(response.status === 200){
@@ -43,12 +36,9 @@ function Navbar() {
           } catch (error) {
             console.log(error);
           }
-        }
-    }
-      
-    useEffect(() => {
-        decodeAuthToken(token);
-    }, [token]);
+      }
+      autherization();
+    }, []);
 
   return (
     <nav>

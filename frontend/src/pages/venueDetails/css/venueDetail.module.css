@@ -5,7 +5,7 @@
 }
 
 .venueCard{
-    width: 60%;
+    width: 70%;
     margin: auto;
     display: flex;
     gap: 10px;
@@ -40,6 +40,11 @@
         justify-content: space-around;
         align-items: center;
     }
+}
+
+.auction-select-wrap{
+    display: flex;
+    align-items: center;
 }
 
 .auction-table-wrap {

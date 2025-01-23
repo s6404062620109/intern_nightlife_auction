@@ -5,8 +5,40 @@ import { useNavigate } from 'react-router-dom';
 
 function AuctionTable({ tableId }) {
     const [ auctionData , setAuctionData ] = useState([]);
-    const token = localStorage.getItem('authToken');
+    const [user, setUser] = useState({
+          id: null,
+          email: null,
+          name: null,
+          role: null,
+          coin: null
+    });
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const autherization = async () => {
+          try{
+            const response = await backend.get('/auth/authorization', {
+              withCredentials: true
+            });
+      
+            if(response.status === 200){
+              const userData = response.data;
+                
+              setUser({
+                id: userData.id,
+                email: userData.email,
+                name: userData.name,
+                role: userData.role,
+                coin: userData.coin
+              });
+            }
+      
+            } catch (error) {
+              console.log(error);
+            }
+        }
+        autherization();
+    }, []);
 
     useEffect(() => {
         const fetchAuctions = async () => {
@@ -31,7 +63,7 @@ function AuctionTable({ tableId }) {
     };
 
     const handleJoinAuction = (auctionId) => {
-        if(!token){
+        if(!user){
             alert("Please sign in before join auction.");
             navigate('/signin');
             return;
