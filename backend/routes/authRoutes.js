@@ -61,8 +61,7 @@ router.post('/register', async (req, res) => {
               Verify Email Address
             </a>
           </p>
-          <p>If you did not register for an account, please ignore this email.</p>
-          <p>Best regards,</p>
+          <p>If you need complete your registration, please confirm in 1 hour after seen this email.</p>
           <p style="font-weight: bold;">The Nightlife Auction Team</p>
         </div>
       `,
@@ -137,6 +136,15 @@ router.post('/login', async (req, res) => {
   catch (error) {
     res.status(500).json({ message: 'Error logging in', error });
   }
+});
+
+router.post('/logout', (req, res) => {
+  res.clearCookie('authToken', {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'none',
+  });
+  res.status(200).json({ message: 'Logout successful' });
 });
 
 router.get('/authorization', async (req, res) => {

@@ -12,6 +12,7 @@ function Navbar() {
       role: null,
       coin: null
     });
+    const [ showOption, setShowOption ] = useState(false);
     const navigate = useNavigate();  
       
     useEffect(() => {
@@ -40,6 +41,25 @@ function Navbar() {
       autherization();
     }, []);
 
+    const handleLogout = async () => {
+      try {
+        const response = await backend.post('/auth/logout', {}, { withCredentials: true });
+  
+        if (response.status === 200) {
+          setUser({
+            id: null,
+            email: null,
+            name: null,
+            role: null,
+            coin: null,
+          });
+          navigate('/signin');
+        }
+      } catch (error) {
+        console.error('Error logging out:', error);
+      }
+    };
+
   return (
     <nav>
         <div className={style["wrap"]}>
@@ -56,8 +76,20 @@ function Navbar() {
             </div>
 
             {user.name ? (
-                <div className={style["user-info"]}>
+                <div className={style["user-info"]}
+                  onClick={() => setShowOption(!showOption)}
+                >
                     <p>{user.name}</p>
+                    { showOption && (
+                      <ul className={style["user-option-wrap"]}>
+                        <li>
+                          Auction history
+                        </li>
+                        <li onClick={handleLogout}>
+                          log out
+                        </li>
+                      </ul>
+                    )}
                 </div>
             ):(
                 <div className={style["link-wrap"]}
