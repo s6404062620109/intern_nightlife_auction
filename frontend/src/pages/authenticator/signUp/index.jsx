@@ -110,7 +110,7 @@ function SignUp() {
         </form>
 
         <div>
-          <Link to="/signin">Do you already have an account ?</Link>
+          <Link to="/signin">Do you already have an account?</Link>
         </div>
       </div>
     </div>

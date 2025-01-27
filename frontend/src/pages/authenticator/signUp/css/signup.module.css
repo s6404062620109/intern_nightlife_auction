@@ -72,6 +72,7 @@
     background: #dc26c3;
 }
 .input-footer > input[type="submit"]:hover{
+    cursor: pointer;
     border: none;
     border: 0.5px solid #b3b3b3;
     box-shadow: 6px 5px 10px rgba(0, 0, 0, 0.25);

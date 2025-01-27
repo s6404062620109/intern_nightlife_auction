@@ -102,6 +102,128 @@ router.get('/verify-email', async (req, res) => {
   }
 });
 
+router.post('/reset-password', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    const lastResetTimestamp = user.updatedAt.getTime();
+    const currentTime = Date.now();
+    const timeSinceLastRequest = currentTime - lastResetTimestamp;
+
+    if (timeSinceLastRequest < 3600000) { 
+      const timeRemaining = Math.ceil((3600000 - timeSinceLastRequest) / 60000);
+      return res.status(400).json({
+        message: `You have already requested a password reset. Please wait ${timeRemaining} minutes before trying again.`,
+      });
+    }
+
+    const resetToken = jwt.sign({ userId: user._id }, process.env.SECRET_RESET, { expiresIn: '1h' });
+    user.updatedAt = new Date(); 
+    await user.save();
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const resetUrl = `${process.env.CLIENT_URL}/auth/verify-reset-token?token=${resetToken}`;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: 'Reset Your Password',
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2 style="color: #2a9d8f;">Password Reset Request</h2>
+          <p>Dear ${user.name},</p>
+          <p>We received a request to reset your password. Click the button below to reset it:</p>
+          <p style="margin: 20px 0;">
+            <a 
+              href="${resetUrl}" 
+              style="
+                display: inline-block; 
+                padding: 10px 20px; 
+                background-color: #2a9d8f; 
+                color: #ffffff; 
+                text-decoration: none; 
+                border-radius: 5px; 
+                font-weight: bold;"
+            >
+              Reset Password
+            </a>
+          </p>
+          <p>If you did not request a password reset, please ignore this email.</p>
+          <p style="font-weight: bold;">The Nightlife Auction Team</p>
+        </div>
+      `,
+    });
+
+    res.status(200).json({ message: 'Reset password email sent. Please check your email.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error sending reset password email', error });
+  }
+});
+
+router.get('/verify-reset-token', async (req, res) => {
+  const { token } = req.query;
+
+  if (!token) {
+    return res.status(400).json({ message: 'Reset token is required' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_RESET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid token' });
+    }
+
+    res.redirect(`${process.env.FRONTEND_URL}/auth/change-password?token=${token}`);
+  } catch (error) {
+    res.status(500).json({ message: 'Error verifying reset token', error });
+  }
+});
+
+router.post('/change-password', async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ message: 'Token and new password are required' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_RESET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid token' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error changing password', error });
+  }
+});
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 

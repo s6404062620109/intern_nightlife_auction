@@ -8,6 +8,8 @@ import Signin from './pages/authenticator/signIn/index';
 import SignUp from './pages/authenticator/signUp';
 import VenueDetail from './pages/venueDetails';
 import Bidauction from './pages/bidAuction';
+import Reset from './pages/authenticator/reset';
+import ChangePassword from './pages/authenticator/changepassword';
 
 function App() {
 
@@ -23,6 +25,8 @@ function App() {
           <Route path='/auction/:tableId/bidauction/:auctionId' element={<Bidauction/>}/>
           <Route path='/signin' element={<Signin/>}/>
           <Route path='/signup' element={<SignUp/>}/>
+          <Route path='/reset' element={<Reset/>}/>
+          <Route path='/auth/change-password' element={<ChangePassword/>}/>
         </Routes>
       </div>
     </div>

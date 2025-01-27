@@ -63,7 +63,8 @@ function AuctionTable({ tableId }) {
     };
 
     const handleJoinAuction = (auctionId) => {
-        if(!user){
+
+        if (user.id === null && user.email === null && user.name === null && user.role === null && user.coin === null) {
             alert("Please sign in before join auction.");
             navigate('/signin');
             return;
