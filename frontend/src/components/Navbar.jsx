@@ -83,7 +83,10 @@ function Navbar() {
                     { showOption && (
                       <ul className={style["user-option-wrap"]}>
                         <li>
-                          Auction history
+                          My Auction
+                        </li>
+                        <li>
+                          Bid History
                         </li>
                         <li onClick={handleLogout}>
                           log out

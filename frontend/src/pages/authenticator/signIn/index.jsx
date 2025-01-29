@@ -74,7 +74,7 @@ function SignIn() {
 
         <div className={style["nav-member-wrap"]}>
           <Link to='/signup'>Don’t have an account?</Link>
-          <Link to='/reset'>Forgot password</Link>
+          <Link to='/reset'>Forgot password?</Link>
         </div>
       </div>
     </div>
