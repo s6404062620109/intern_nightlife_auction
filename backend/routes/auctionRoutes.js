@@ -6,32 +6,26 @@ require('dotenv').config();
 const router = express.Router();
 
 router.post('/post', async (req, res) => {
-    const { tableId, startTime, endTime, startCoins } = req.body;
+    const { tableId, accesstime, startTime, endTime, startCoins } = req.body;
   
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
     }
 
-    if(!tableId || !startTime || !endTime || !startCoins){
-        return res.status(400).json({ message: 'TableId, startTime, endTime and startCoins are required.' });
+    if (!tableId || !accesstime || !startTime || !endTime || !startCoins) {
+        return res.status(400).json({ message: 'tableId, accesstime, startTime, endTime, and startCoins are required.' });
     }
 
-    if (typeof tableId !== 'string') {
-        return res.status(400).json({ message: 'TableId must be a string.' });
+    if (typeof tableId !== 'string' || typeof startCoins !== 'number') {
+        return res.status(400).json({ message: 'Invalid data types.' });
     }
 
-    if (typeof startCoins !== 'number') {
-        return res.status(400).json({ message: 'StartCoins must be a number.' });
-    }
-
+    const accessDate = new Date(accesstime);
     const start = new Date(startTime);
     const end = new Date(endTime);
 
-    if (isNaN(start.getTime())) {
-        return res.status(400).json({ message: 'Invalid startTime format. Must be a valid date-time string.' });
-    }
-    if (isNaN(end.getTime())) {
-        return res.status(400).json({ message: 'Invalid endTime format. Must be a valid date-time string.' });
+    if (isNaN(accessDate.getTime()) || isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return res.status(400).json({ message: 'Invalid starttime, endtime and accesstime date format.' });
     }
 
     if (start >= end) {
@@ -48,10 +42,8 @@ router.post('/post', async (req, res) => {
 
         const newAuction = new Auction({
             tableId,
-            checkpoint: {
-                start: startTime,
-                end: endTime
-            },
+            accesstime: accessDate,
+            checkpoint: { start, end },
             startCoins,
         });
         await newAuction.save();
@@ -135,7 +127,7 @@ router.get('/readByTableId/:tableId', async (req, res) => {
 });
 
 router.put('/update', async (req, res) => {
-    const { id, tableId, startTime, endTime, startCoins } = req.body;
+    const { id, tableId, accesstime, startTime, endTime, startCoins } = req.body;
 
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
@@ -152,6 +144,15 @@ router.put('/update', async (req, res) => {
         }
         updateFields['tableId'] = tableId;
     }
+
+    if (accesstime){
+        const acctime = new Date(accesstime);
+        if (isNaN(acctime.getTime())) {
+            return res.status(400).json({ message: 'Invalid accesstime format. Must be a valid date-time string.' });
+        }
+        updateFields['accesstime'] = acctime;
+    }
+
     if (startCoins) {
         if (typeof startCoins !== 'number') {
             return res.status(400).json({ message: 'StartCoins must be a number.' });

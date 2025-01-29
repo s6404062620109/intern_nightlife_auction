@@ -3,20 +3,30 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import style from './css/venueDetail.module.css';
 import backend from '../../api/backend';
-import AuctionTable from '../../components/AuctionTable';
 
 function VenueDetail() {
     const { id } = useParams();
+    const [user, setUser] = useState({
+          id: null,
+          email: null,
+          name: null,
+          role: null,
+          coin: null
+    });
     const [ venueData, setVenueData ] = useState({
         name: null,
         address: null,
         banner: null,
         ownerId: null,
         ownerName: null,
+        contact: {
+            phone: null,
+            email: null,
+            facebook: null
+        }
     });
-    const [ tableData, settableData ] = useState([]);
-    const [ tableSelected, setTableSelected ] = useState("");
     const [imgPath, setImgPath] = useState(``);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchVenueData = async () => {
@@ -25,20 +35,50 @@ function VenueDetail() {
 
                 if(response.status === 200){
                     let data = response.data.data;
-                    
+
                     setVenueData({
                         ...venueData,
                         name: data.name,
                         address: data.address,
                         banner: data.banner,
-                        ownerId: data.ownerId
+                        ownerId: data.ownerId,
+                        contact: {
+                            phone: data.contact.phone,
+                            email: data.contact.email,
+                            facebook: data.contact.facebook
+                        }
                     });
                 }
             } catch (error) {
                 console.log(error);
             }
         }
+
+        const autherization = async () => {
+            try{
+              const response = await backend.get('/auth/authorization', {
+                withCredentials: true
+              });
+        
+              if(response.status === 200){
+                const userData = response.data;
+                  
+                setUser({
+                  id: userData.id,
+                  email: userData.email,
+                  name: userData.name,
+                  role: userData.role,
+                  coin: userData.coin
+                });
+              }
+        
+              } catch (error) {
+                console.log(error);
+              }
+        }
+          
         fetchVenueData();
+        autherization();
     }, [id]);
 
     useEffect(() => {
@@ -58,23 +98,6 @@ function VenueDetail() {
                 console.log(error);
             }
         }
-        fetchOwner();
-    }, [venueData.ownerId]);
-
-    useEffect(() => {
-        const fetchTablesVenue = async () => {
-            try{
-                const response = await backend.get(`/table/readByVenueId/${id}`);
-
-                if(response.status === 200){
-                    let data = response.data.data;
-                    settableData(data);
-                }
-            }
-            catch(error) {
-                console.log(error);
-            }
-        }        
         const fetchBannerImg = async () => {
             try{
                 const response = await backend.get(`/img/getImg/${venueData.banner}`);
@@ -88,11 +111,9 @@ function VenueDetail() {
             }
         }
 
-        fetchTablesVenue();
+        fetchOwner();
         fetchBannerImg();
     }, [venueData]);
-
-    const closePopup = () => setTableSelected('');
 
   return (
     <div className={style.container}>
@@ -105,63 +126,46 @@ function VenueDetail() {
             </div>
             <div className={style.infoBox}>
                 <div className={style.info}>
-                    <h2>Name: {venueData.name}</h2>
+                    <h2>{venueData.name}</h2>
                     <p>Location: {venueData.address}</p>
-                    <p>Owner: {venueData.ownerName}</p>
+                    <p>By: {venueData.ownerName}</p>
                 </div>
 
-                <form 
-                    onSubmit={(e) => e.preventDefault()}
-                >
+                <div className={style.contact}>
+                    <h2>Venue Contact</h2>
+                    <p>
+                        <img
+                            alt='Contact phone icon'
+                            src='/Phone.svg'
+                        />
+                        {venueData.contact.phone}
+                    </p>
+                    <p>
+                        <img
+                            alt='Contact mail icon'
+                            src='/mail.svg'
+                        />
+                        {venueData.contact.email}
+                    </p>
+                    <p>
+                        <img
+                            alt='Contact facebook icon'
+                            src='/facebook_Icon.svg'
+                        />
+                        {venueData.contact.facebook}
+                    </p>
+                </div>
 
-                    <h3>Table</h3>
-                    <img
-                        alt='Table plan'
-                        src='/Schema-table_plan.drawio.png'
-                    />
+                <div className={style["button-wrap"]}>
+                    {venueData.ownerName === user.name ? (
+                        <button onClick={() => navigate(``)}>View Auctions</button>
+                    ) : (
+                        <button onClick={() => navigate(`/venuedetail/${id}/table`)}>Auction table</button>
+                    )}
                     
-                    <div className={style["auction-select-wrap"]}>
-                        <p>Auction table: </p>
-                        <select
-                            onChange={(e) => setTableSelected(e.target.value)}
-                            value={tableSelected}
-                        >
-                            <option value="">Select a table</option>
-                            {tableData.map((item) => (
-                                <option 
-                                    key={item._id} 
-                                    value={item._id}
-                                >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    
-                </form>
-         
+                </div>
             </div>
         </div>
-        
-        {tableSelected && (
-            <>
-                <div
-                    className={`${style.overlay} ${tableSelected ? style.show : ''}`}
-                    onClick={closePopup}
-                ></div>
-                <div
-                    className={`${style['auction-table-wrap']} ${tableSelected ? style.show : ''}`}
-                    >
-                    <img
-                        alt='Close button'
-                        src='/Close_round.svg'
-                        onClick={closePopup} 
-                        className={style.closeButton}
-                    />
-                    <AuctionTable tableId={tableSelected} />
-                </div>
-            </>
-        )}
         
     </div>
   )

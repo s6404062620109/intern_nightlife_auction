@@ -7,6 +7,10 @@ const AuctionSchema = new mongoose.Schema(
         ref: "tables", 
         required: true, 
     },
+    accesstime: {
+        type: Date,
+        require: true
+    },
     checkpoint: { 
         start: {
             type: Date,

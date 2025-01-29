@@ -13,7 +13,7 @@
     padding: 10px;
     border: 1px solid black;
 }
-.auctionTable thead th:nth-child(3){
+.auctionTable thead th:nth-child(4){
     text-align: center;
 }
 
@@ -21,7 +21,7 @@
     padding: 10px;
     border: 1px solid black;
 }
-.auctionTable tbody td:nth-child(3) {
+.auctionTable tbody td:nth-child(4) {
     text-align: center;
 }
 

@@ -1,0 +1,11 @@
+.container{
+    width: 60%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    h1{
+        color: white;
+    }
+}

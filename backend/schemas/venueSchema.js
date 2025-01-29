@@ -18,6 +18,20 @@ const VenueSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
         require: true
+    },
+    contact: {
+      phone: {
+        type: String,
+        require: true
+      },
+      email: {
+        type: String,
+        require: true
+      },
+      facebook: {
+        type: String,
+        require: true
+      }
     }
   },
   { timestamps: true }

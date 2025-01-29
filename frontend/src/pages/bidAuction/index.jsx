@@ -13,7 +13,9 @@ function Bidauction() {
     coin: null
   });   
   const { tableId, auctionId } = useParams();
-  const [ bidHistory, setBidHistory ] = useState([]);
+  const [ bidHistory, setBidHistory ] = useState([
+
+  ]);
   const [ tableData, setTableData ] = useState({});
   const [ bidValue, setBidValue ] = useState(0);
   const [bitRate, setBitRate] = useState([10, 100, 1000, -10, -100, -1000]);
@@ -52,7 +54,7 @@ function Bidauction() {
         const response = await backend.get(`/bid/readByAuction/${auctionId}`);
 
         if(response.status === 200){
-          const sortedBids = response.data.data.sort((a, b) => b.offerBid - a.offerBid);
+          const sortedBids = response.data.data.sort((a, b) => b.offerBid - a.offerBid);          
           setBidHistory(sortedBids);
         }
       } catch(error) {
@@ -114,17 +116,18 @@ function Bidauction() {
 
         <div className={`${style.content} ${style.scrollable}`}>
           <table className={style['bid-table']}>
-            <thead>
+            {/* <thead>
               <tr>
                 <th>Bid Value</th>
                 <th>Time</th>
               </tr>
-            </thead>
+            </thead> */}
             <tbody>
               {bidHistory.length > 0 ? (
                 bidHistory.map((bid, index) => (
                   <tr key={bid._id}>
                     <td>{bid.offerBid}</td>
+                    <td>{bid.userInfo.name}</td>
                     <td>{new Date(bid.time).toLocaleString()}</td>
                   </tr>
                 ))
@@ -139,7 +142,7 @@ function Bidauction() {
 
         <div className={style["currentBid-wrap"]}>
           <p>Current Value :</p>
-          {bidHistory.length > 0 ? ( // Check if bidHistory has at least one item
+          {bidHistory.length > 0 ? ( 
             <>
               <p>{bidHistory[0].offerBid}</p>
               <p>Coins</p>

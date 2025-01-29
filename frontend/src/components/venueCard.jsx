@@ -35,7 +35,7 @@ function venueCard({ id, name, banner }) {
         )}
 
         <div className={style.cardInfo}>
-            <p>Name: {name}</p>
+            <p>{name}</p>
         </div>
     </div>
   )

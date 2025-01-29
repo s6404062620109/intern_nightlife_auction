@@ -82,8 +82,8 @@ function Navbar() {
                     <p>{user.name}</p>
                     { showOption && (
                       <ul className={style["user-option-wrap"]}>
-                        <li>
-                          My Auction
+                        <li onClick={() => navigate('/myvenue')}>
+                          My Venue
                         </li>
                         <li>
                           Bid History

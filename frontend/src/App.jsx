@@ -10,6 +10,8 @@ import VenueDetail from './pages/venueDetails';
 import Bidauction from './pages/bidAuction';
 import Reset from './pages/authenticator/reset';
 import ChangePassword from './pages/authenticator/changepassword';
+import Auction from './pages/auction';
+import MyVenue from './pages/myvenue';
 
 function App() {
 
@@ -21,7 +23,9 @@ function App() {
         <Routes>
           <Route path='/' element={<Home/>}/>
           <Route path='/venue' element={<Venue/>}/>
+          <Route path='/myvenue' element={<MyVenue/>}/>
           <Route path='/venuedetail/:id' element={<VenueDetail/>}/>
+          <Route path='/venuedetail/:id/table' element={<Auction/>}/>
           <Route path='/auction/:tableId/bidauction/:auctionId' element={<Bidauction/>}/>
           <Route path='/signin' element={<Signin/>}/>
           <Route path='/signup' element={<SignUp/>}/>

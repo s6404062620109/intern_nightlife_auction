@@ -80,6 +80,7 @@ function AuctionTable({ tableId }) {
     <table className={style.auctionTable}>
         <thead>
             <th>เวลาที่เปิดจอง</th>
+            <th>เวลาเข้าใช้บริการ</th>
             <th>ราคาเริ่มต้น</th>
             <th>เข้าร่วม</th>
         </thead>
@@ -91,6 +92,10 @@ function AuctionTable({ tableId }) {
                     {formatDateTime(item.checkpoint.start)} - {formatDateTime(item.checkpoint.end)}
                 </td>
 
+                <td>
+                    {formatDateTime(item.accesstime)}
+                </td>
+                
                 <td>
                     {item.startCoins} Coins
                 </td>

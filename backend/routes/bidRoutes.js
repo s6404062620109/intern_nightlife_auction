@@ -168,14 +168,20 @@ router.get('/readByAuction/:auctionId', async (req, res) => {
     
     try {
         const BidHistoryGet = await BidHistory.find({ auctionId });
+        const bidHistoryWithUserInfo = await Promise.all(
+            BidHistoryGet.map(async (bid) => {
+                const user = await User.findById(bid.offerId);
+                return { ...bid._doc, userInfo: user };
+            })
+        );
 
-        if(!BidHistoryGet){
+        if(!bidHistoryWithUserInfo){
             res.status(409).json({ message: "Bid history not found." });
         }
+
         else{
-            res.status(200).json({ data: BidHistoryGet });
+            res.status(200).json({ data: bidHistoryWithUserInfo });
         }
-        
     } 
     catch (error) {
       res.status(500).json({ message: 'Error get bid history:', error });

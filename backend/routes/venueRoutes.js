@@ -7,18 +7,26 @@ require('dotenv').config();
 const router = express.Router();
 
 router.post('/post', async (req, res) => {
-    const { name, address, banner, ownerId } = req.body;
+    const { name, address, banner, ownerId, contact } = req.body;
   
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
     }
 
-    if(!name || !address || !banner || !ownerId){
-        return res.status(400).json({ message: 'name, address, banner and ownerId are required.' });
+    if (!name || !address || !banner || !ownerId || !contact) {
+        return res.status(400).json({ message: 'Name, address, banner, ownerId, and contact information are required.' });
     }
 
     if(typeof name !== 'string' || typeof address !== 'string' || typeof banner !== 'string' || typeof ownerId !== 'string'){
         return res.status(400).json({ message: 'name, address, banner and ownerId must be a string.' });
+    }
+
+    if (!contact.phone || !contact.email || !contact.facebook) {
+        return res.status(400).json({ message: 'Contact information must include phone, email, and facebook.' });
+    }
+
+    if (typeof contact.phone !== 'string' || typeof contact.email !== 'string' || typeof contact.facebook !== 'string') {
+        return res.status(400).json({ message: 'Contact information fields must be strings.' });
     }
     
     try {
@@ -32,7 +40,12 @@ router.post('/post', async (req, res) => {
             name,
             address,
             banner,
-            ownerId
+            ownerId,
+            contact: {
+                phone: contact.phone,
+                email: contact.email,
+                facebook: contact.facebook
+            }
         });
         await newVenue.save();
   
@@ -47,6 +60,29 @@ router.get('/readAll', async (req, res) => {
   
     try {
         const venueGetAll = await Venue.find();
+
+        if(!venueGetAll){
+            res.status(409).json({ message: "Venues not found." });
+        }
+        else{
+            res.status(200).json({ data: venueGetAll });
+        }
+        
+    } 
+    catch (error) {
+      res.status(500).json({ message: 'Error get venue:', error });
+    }
+});
+
+router.get('/readAllMyVenue/:ownerId', async (req, res) => {
+    const { ownerId } = req.params;
+
+    if(!ownerId){
+        return res.status(400).json({ message: "OwnerId is required." });
+    }
+  
+    try {
+        const venueGetAll = await Venue.find({ ownerId: ownerId });
 
         if(!venueGetAll){
             res.status(409).json({ message: "Venues not found." });
@@ -89,7 +125,7 @@ router.get('/readById/:id', async (req, res) => {
 });
 
 router.put('/update', async (req, res) => {
-    const { id, name, address, banner, ownerId } = req.body;
+    const { id, name, address, banner, ownerId, contact } = req.body;
 
     if (!req.body) {
         return res.status(400).json({ message: 'Body can not empty.' });
@@ -127,6 +163,36 @@ router.put('/update', async (req, res) => {
             return res.status(400).json({ message: 'Banner must be a string.' });
         }
         updateFields.banner = banner;
+    }
+
+    const currentVenue = await Venue.findById(id);
+    if (!currentVenue) {
+        return res.status(404).json({ message: 'Venue not found.' });
+    }
+    
+    if (contact) {
+        const contactFields = { ...currentVenue.contact };
+        if (contact.phone !== undefined) {
+            if (typeof contact.phone !== 'string') {
+                return res.status(400).json({ message: 'Phone must be a string.' });
+            }
+            contactFields.phone = contact.phone;
+        }
+        if (contact.email !== undefined) {
+            if (typeof contact.email !== 'string') {
+                return res.status(400).json({ message: 'Email must be a string.' });
+            }
+            contactFields.email = contact.email;
+        }
+        if (contact.facebook !== undefined) {
+            if (typeof contact.facebook !== 'string') {
+                return res.status(400).json({ message: 'Facebook must be a string.' });
+            }
+            contactFields.facebook = contact.facebook;
+        }
+        if (Object.keys(contactFields).length > 0) {
+            updateFields.contact = contactFields;
+        }   
     }
 
     if (Object.keys(updateFields).length === 0) {
