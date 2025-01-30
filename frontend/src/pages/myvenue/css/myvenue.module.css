@@ -3,9 +3,24 @@
     margin: auto;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: flex-start;
+    gap: 20px;
 
     h1{
         color: white;
     }
+}
+
+.content{
+    width: 80%;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content-wrap{
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 20px;
 }

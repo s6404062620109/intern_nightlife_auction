@@ -59,15 +59,25 @@ function MyVenue() {
   return (
     <div className={style.container}>
       <h1>My Venue</h1>
-      {venueData.map((item) => (
-        <VenueCard
-          key={item._id}
-          id={item._id}
-          name={item.name}
-          banner={item.banner}
-        />
-      ))}
-      
+
+      <div className={style.content}>
+        <div className={style["content-wrap"]}>
+          {venueData.length > 0 ? (
+            <>
+              {venueData.map((item) => (
+                <VenueCard
+                  key={item._id}
+                  id={item._id}
+                  name={item.name}
+                  banner={item.banner}
+                />
+              ))}
+            </>
+          ):(
+            <div>Not have you venue.</div>  
+          )}
+        </div>
+      </div>      
     </div>
   )
 }
