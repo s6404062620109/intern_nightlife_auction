@@ -13,12 +13,10 @@ function Bidauction() {
     coin: null
   });   
   const { tableId, auctionId } = useParams();
-  const [ bidHistory, setBidHistory ] = useState([
-
-  ]);
+  const [ bidHistory, setBidHistory ] = useState([]);
   const [ tableData, setTableData ] = useState({});
   const [ bidValue, setBidValue ] = useState(0);
-  const [bitRate, setBitRate] = useState([10, 100, 1000, -10, -100, -1000]);
+  const [bitRate] = useState([0, 10, 100, 1000]);
   const [selectedRate, setSelectedRate] = useState(bitRate[0]);
   const [ bidStatus, setBidStatus ] = useState("");
   
@@ -101,8 +99,19 @@ function Bidauction() {
     setSelectedRate(rate);
   };
 
-  const handleApplyRate = () => {
-    setBidValue((prevValue) => Math.max(0, prevValue + selectedRate));
+  const handleApplyRate = (action) => {
+    setBidValue((prevValue) => {
+      if (selectedRate === 0){
+        return 0;
+      }
+      if (action === "+") {
+        return prevValue + selectedRate;
+      }
+      if (action === "-" && prevValue >= selectedRate) {
+        return prevValue - selectedRate;
+      }
+      return prevValue;
+    });
   };
 
   return (
@@ -116,12 +125,6 @@ function Bidauction() {
 
         <div className={`${style.content} ${style.scrollable}`}>
           <table className={style['bid-table']}>
-            {/* <thead>
-              <tr>
-                <th>Bid Value</th>
-                <th>Time</th>
-              </tr>
-            </thead> */}
             <tbody>
               {bidHistory.length > 0 ? (
                 bidHistory.map((bid, index) => (
@@ -154,29 +157,29 @@ function Bidauction() {
 
         <div className={style["bid-wrap"]}>
           <div className={style["value-wrap"]}>
+            <button onClick={() => handleApplyRate("-")}>-</button>
+            
             <select
               value={selectedRate}
               onChange={handleBidRateChange}
               className={style['rate-selector']}
             >
-              <option value={0}>0</option>
               {bitRate.map((rate) => (
                 <option key={rate} value={rate}>
-                  {rate > 0 ? `+${rate}` : rate}
+                  {rate}
                 </option>
               ))}
             </select>
-            <button onClick={handleApplyRate} className={style['apply-button']}>
-              Bid rate
-            </button>
             
-            <div className={style["bidValue-wrap"]}>
-              <p>{bidValue}</p>
-            </div>
+            <button onClick={() => handleApplyRate("+")}>+</button>
+          </div>
+
+          <div className={style["bidValue-wrap"]}>
+            <p>{bidValue}</p>
           </div>
 
           <div className={style["button-wrap"]}>
-            <button onClick={() => handleSubmitBid()}>Current bid</button>
+            <button onClick={() => handleSubmitBid()}>Place bid</button>
           </div>
 
           <label>{bidStatus}</label>

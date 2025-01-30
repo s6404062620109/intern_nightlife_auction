@@ -38,6 +38,7 @@ function VenueDetail() {
       facebook: venueData?.contact?.facebook,
     },
   });
+  const [updateMessage, setUpdateMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -145,10 +146,21 @@ function VenueDetail() {
 
   const handleSave = async () => {
     try {
-        const response = await backend.put(`/venue/update/${id}`, { editVenue });
+        const response = await backend.put(`/venue/update`, { 
+          id,
+          name: editVenue.name, 
+          address: editVenue.address,
+          ownerId: editVenue.ownerId,   
+          contact:{
+            phone: editVenue.contact.phone,
+            email: editVenue.contact.email,
+            facebook: editVenue.contact.facebook
+          } 
+        });
         if (response.status === 200) {
             setVenueData(editVenue);
-            setIsEditing(false);
+            setUpdateMessage(response.data.message);
+            setTimeout(() => window.location.reload(), 2000);
         }
     } catch (error) {
         console.log(error);
@@ -211,7 +223,7 @@ function VenueDetail() {
 
           <div className={style["button-wrap"]}>
             {venueData.ownerId === user.id ? (
-              <button onClick={() => navigate(``)}>View Auctions</button>
+              <button onClick={() => navigate(`/venuedetail/${id}/table/${venueData.ownerId}/auctions`)}>View Auctions</button>
             ) : (
               <button onClick={() => navigate(`/venuedetail/${id}/table`)}>
                 Auction table
@@ -222,9 +234,9 @@ function VenueDetail() {
       </div>
 
       <Edit 
-        venueData={venueData}
         editVenue={editVenue}
         setEditVenue={setEditVenue}
+        updateMessage={updateMessage}
         openEditPopup={openEditPopup}
         setOpenEditPopup={setOpenEditPopup}
         handleInputChange={handleInputChange}

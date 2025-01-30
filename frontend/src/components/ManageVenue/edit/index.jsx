@@ -3,7 +3,8 @@ import style from './css/edit.module.css';
 
 function Edit({ 
   editVenue, 
-  setEditVenue, 
+  setEditVenue,
+  updateMessage,
   openEditPopup, 
   setOpenEditPopup, 
   handleInputChange,
@@ -19,35 +20,35 @@ function Edit({
         <input
           type="text"
           name="name"
-          value={editVenue.name || ""}
+          value={editVenue.name}
           onChange={handleInputChange}
           placeholder="Venue Name"
         />
         <input
           type="text"
           name="address"
-          value={editVenue.address || ""}
+          value={editVenue.address}
           onChange={handleInputChange}
           placeholder="Address"
         />
         <input
           type="text"
           name="phone"
-          value={editVenue.contact.phone || ""}
+          value={editVenue.contact.phone}
           onChange={handleContactChange}
           placeholder="Phone"
         />
         <input
           type="email"
           name="email"
-          value={editVenue.contact.email || ""}
+          value={editVenue.contact.email}
           onChange={handleContactChange}
           placeholder="Email"
         />
         <input
           type="text"
           name="facebook"
-          value={editVenue.contact.facebook || ""}
+          value={editVenue.contact.facebook}
           onChange={handleContactChange}
           placeholder="Facebook"
         />
@@ -55,6 +56,8 @@ function Edit({
           <button onClick={() => setOpenEditPopup(false)}>Cancel</button>
           <button onClick={handleSave}>Confirm</button>
         </div>
+
+        <label>{updateMessage}</label>
       </div>
     </div>
   );

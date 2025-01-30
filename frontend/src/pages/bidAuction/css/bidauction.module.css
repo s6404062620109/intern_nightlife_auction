@@ -1,5 +1,6 @@
 .container{
     width: 60%;
+    padding: 20px 0;
     background: rgba(255, 255, 255, 0.5);
     border-radius: 15px;
     display: flex;
@@ -71,6 +72,30 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
+}
+.value-wrap > button {
+    width: 40px; 
+    height: 40px; 
+    border: none;
+    background: #DD3388;
+    color: white;
+    border-radius: 50%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease; 
+}
+
+.value-wrap > button:hover {
+    background: #bb2266; 
+    transform: scale(1.1); 
+}
+
+.value-wrap > button:active {
+    transform: scale(0.95); 
 }
 
 .bidValue-wrap{

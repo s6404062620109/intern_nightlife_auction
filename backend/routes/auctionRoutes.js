@@ -126,6 +126,38 @@ router.get('/readByTableId/:tableId', async (req, res) => {
     }
 });
 
+router.get('/readMyAuctions/:venueId', async (req, res) => {
+    const { venueId } = req.params;
+
+    if(!venueId){
+        return res.status(400).json({ message: 'VenueId are required.' });
+    }
+
+    if(typeof venueId  !== 'string'){
+        return res.status(400).json({ message: 'VenueId must be a string.' });
+    }
+    
+    try {
+        const tables = await Table.find({ venueId });
+        if (!tables.length) {
+            return res.status(404).json({ message: 'No tables found for this venue.' });
+        }
+
+        const tablesWithAuctions = await Promise.all(
+            tables.map(async (table) => {
+                const auctions = await Auction.find({ tableId: table._id });
+                return { ...table._doc, auctions };
+            })
+        );
+
+        res.status(200).json({ data: tablesWithAuctions });
+        
+    } 
+    catch (error) {
+      res.status(500).json({ message: 'Error get table:', error });
+    }
+});
+
 router.put('/update', async (req, res) => {
     const { id, tableId, accesstime, startTime, endTime, startCoins } = req.body;
 
