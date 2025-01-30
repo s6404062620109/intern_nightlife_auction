@@ -30,12 +30,12 @@ function VenueDetail() {
   const [hoverEditButton, setHoverEditButton] = useState(false);
   const [openEditPopup, setOpenEditPopup] = useState(false);
   const [editVenue, setEditVenue] = useState({
-    name: venueData?.name || "",
-    address: venueData?.address || "",
+    name: venueData?.name,
+    address: venueData?.address,
     contact: {
-      phone: venueData?.contact?.phone || "",
-      email: venueData?.contact?.email || "",
-      facebook: venueData?.contact?.facebook || "",
+      phone: venueData?.contact?.phone,
+      email: venueData?.contact?.email,
+      facebook: venueData?.contact?.facebook,
     },
   });
   const navigate = useNavigate();
