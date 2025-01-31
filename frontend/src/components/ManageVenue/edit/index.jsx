@@ -12,11 +12,12 @@ function Edit({
   handleSave
 }) {
   if (!openEditPopup) return null;
-
+  // console.log(editVenue);
   return (
     <div className={style.modal}>
       <div className={style.modalContent}>
         <h2>Edit Venue</h2>
+        <label>Name</label>
         <input
           type="text"
           name="name"
@@ -24,6 +25,7 @@ function Edit({
           onChange={handleInputChange}
           placeholder="Venue Name"
         />
+        <label>Address</label>
         <input
           type="text"
           name="address"
@@ -31,13 +33,15 @@ function Edit({
           onChange={handleInputChange}
           placeholder="Address"
         />
+        <label>Phone Number</label>
         <input
           type="text"
           name="phone"
           value={editVenue.contact.phone}
           onChange={handleContactChange}
-          placeholder="Phone"
+          placeholder="Phone Number"
         />
+        <label>Email</label>
         <input
           type="email"
           name="email"
@@ -45,6 +49,7 @@ function Edit({
           onChange={handleContactChange}
           placeholder="Email"
         />
+        <label>Facebook</label>
         <input
           type="text"
           name="facebook"
