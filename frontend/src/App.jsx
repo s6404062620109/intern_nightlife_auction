@@ -27,7 +27,7 @@ function App() {
           <Route path='/myvenue' element={<MyVenue/>}/>
           <Route path='/venuedetail/:id' element={<VenueDetail/>}/>
           <Route path='/venuedetail/:id/table' element={<Auction/>}/>
-          <Route path='/venuedetail/:id/table/:ownerId/auctions' element={<MyAuction/>}/>
+          <Route path='/venuedetail/:id/tables/:ownerId/' element={<MyAuction/>}/>
           <Route path='/auction/:tableId/bidauction/:auctionId' element={<Bidauction/>}/>
           <Route path='/signin' element={<Signin/>}/>
           <Route path='/signup' element={<SignUp/>}/>

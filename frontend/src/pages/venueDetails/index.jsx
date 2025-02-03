@@ -223,7 +223,7 @@ function VenueDetail() {
 
           <div className={style["button-wrap"]}>
             {venueData.ownerId === user.id ? (
-              <button onClick={() => navigate(`/venuedetail/${id}/table/${venueData.ownerId}/auctions`)}>View Auctions</button>
+              <button onClick={() => navigate(`/venuedetail/${id}/tables/${venueData.ownerId}`)}>View Auctions</button>
             ) : (
               <button onClick={() => navigate(`/venuedetail/${id}/table`)}>
                 Auction table

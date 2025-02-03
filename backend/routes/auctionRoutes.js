@@ -139,16 +139,16 @@ router.get('/readMyAuctions/:venueId', async (req, res) => {
     
     try {
         const tables = await Table.find({ venueId });
+
         if (!tables.length) {
             return res.status(404).json({ message: 'No tables found for this venue.' });
         }
 
-        const tablesWithAuctions = await Promise.all(
-            tables.map(async (table) => {
-                const auctions = await Auction.find({ tableId: table._id });
-                return { ...table._doc, auctions };
-            })
-        );
+        const tablesWithAuctions = [];
+        for (const table of tables) {
+            const auctions = await Auction.find({ tableId: table._id });
+            tablesWithAuctions.push({ ...table._doc, auctions });
+        }
 
         res.status(200).json({ data: tablesWithAuctions });
         

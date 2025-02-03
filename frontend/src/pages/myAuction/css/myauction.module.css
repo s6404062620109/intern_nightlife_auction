@@ -1,0 +1,116 @@
+.container {
+    width: 60%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(243, 243, 243, 0.9); 
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+}
+
+.container:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.container > table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+thead {
+    background: #9400D3;
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+th, td {
+    padding: 14px 16px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    transition: background 0.3s ease-in-out;
+}
+
+.clickableRow {
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.clickableRow:hover {
+    background: #f0e6f7;
+}
+
+tbody tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+tbody tr:hover {
+    background: #e0d6eb;
+    transition: 0.3s ease-in-out;
+}
+
+.expandedRow {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.miniTable {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.miniTable th, .miniTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+}
+
+.miniTable thead {
+    background: #6a0dad;
+    color: white;
+}
+
+/* Smooth row expansion */
+.hiddenRow {
+    display: none;
+}
+
+.visibleRow {
+    display: table-row;
+    animation: slideDown 0.4s ease-in-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
