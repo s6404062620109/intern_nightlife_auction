@@ -1,13 +1,63 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import backend from "../../api/backend";
 
 import style from "./css/myauction.module.css";
 
 function MyAuction() {
   const { id, ownerId } = useParams();
+  const [user, setUser] = useState({
+    id: null,
+    email: null,
+    name: null,
+    role: null,
+    coin: null
+  });
   const [tableData, setTableData] = useState([]);
   const [expandedRows, setExpandedRows] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const autherization = async () => {
+      try{
+        const response = await backend.get('/auth/authorization', {
+          withCredentials: true
+        });
+  
+        if(response.status === 200){
+          const userData = response.data;
+            
+          setUser({
+            id: userData.id,
+            email: userData.email,
+            name: userData.name,
+            role: userData.role,
+            coin: userData.coin
+          }); 
+        }
+  
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setIsLoading(false);
+        }
+    }
+    autherization();
+  }, []);
+  
+  useEffect(() => {
+    if (!isLoading) {
+      console.log("User:", user);
+      if (!user) {
+        alert("You need to sign in before coming to this page. Please leave this page.");
+        navigate("/");
+      } else if (user.id !== ownerId) {
+        alert("You are not own this venue. Please leave this page.");
+        navigate("/");
+      }
+    }
+  }, [user, ownerId, navigate, isLoading]); 
 
   useEffect(() => {
     const fetchMyAuction = async () => {
@@ -80,7 +130,7 @@ function MyAuction() {
                                 auction.checkpoint.start
                               ).toLocaleString()}{" "}
                               -
-                              {new Date(
+                              {" "}{new Date(
                                 auction.checkpoint.end
                               ).toLocaleString()}
                             </td>
