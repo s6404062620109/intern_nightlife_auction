@@ -1,4 +1,5 @@
 const express = require('express');
+const nodemailer = require('nodemailer');
 const BidHistory = require('../schemas/bidhistorySchema');
 const User = require('../schemas/userSchema');
 const Auction = require('../schemas/auctionSchema');
@@ -311,6 +312,95 @@ router.delete('/delete', async (req, res) => {
     } 
     catch (error) {
       res.status(500).json({ message: 'Error delete bid history:', error });
+    }
+});
+
+router.get('/summarywin/:auctionId', async (req, res) => {
+    const { auctionId } = req.params;
+
+    if(!auctionId){
+        return res.status(400).json({ message: 'AuctionId are required.' });
+    }
+
+    if(typeof auctionId  !== 'string'){
+        return res.status(400).json({ message: 'AuctionId must be a string.' });
+    }
+
+    try{
+        const getAuction = await Auction.findById(auctionId);
+
+        if(!getAuction){
+            return res.status(404).json({ message: "Not found auction." });
+        }
+
+        const highestBid = await BidHistory.find({ auctionId })
+            .sort({ offerBid: -1 })
+            .limit(1);
+
+        if (!highestBid.length) {
+            return res.status(404).json({ message: "No bid records for this auction." });
+        }
+
+        const user = await User.findById(highestBid[0].offerId);
+
+        const transporter = nodemailer.createTransport({
+              service: 'gmail', 
+              auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+              },
+        });
+        
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: '🎉 Congratulations! You Won the Auction 🎉',
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                    <h2 style="color: #2a9d8f;">🎉 Congratulations, ${user.name}! 🎉</h2>
+                    <p>We are thrilled to inform you that you have won the auction <strong>${getAuction.title}</strong> with a bid of <strong>$${highestBid[0].offerBid}</strong>.</p>
+                    <p>Please proceed with the payment and contact the auction organizer for further details.</p>
+                    <p style="margin: 20px 0;">
+                        <a 
+                            href="${process.env.CLIENT_URL}/auction/payment/${auctionId}" 
+                            style="
+                                display: inline-block; 
+                                padding: 10px 20px; 
+                                background-color: #2a9d8f; 
+                                color: #ffffff; 
+                                text-decoration: none; 
+                                border-radius: 5px; 
+                                font-weight: bold;
+                            "
+                        >
+                            Proceed to Payment
+                        </a>
+                    </p>
+                    <p>If you have any questions, feel free to contact us.</p>
+                    <p style="font-weight: bold;">The Nightlife Auction Team</p>
+                </div>
+            `,
+        };
+
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Error sending email:", error);
+                return res.status(500).json({ message: "Error sending email", error });
+            }
+
+            res.status(200).json({
+                highestBid: highestBid[0],
+                winner: {
+                    name: user.name,
+                    email: user.email
+                },
+                emailStatus: "Winner email sent successfully"
+            });
+        });
+
+    } catch(error){
+        res.status(500).json({ message: 'Error get bid history:', error });
     }
 });
 

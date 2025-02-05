@@ -48,7 +48,6 @@ function MyAuction() {
   
   useEffect(() => {
     if (!isLoading) {
-      console.log("User:", user);
       if (!user) {
         alert("You need to sign in before coming to this page. Please leave this page.");
         navigate("/");
