@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const BidHistory = require('../schemas/bidhistorySchema');
 const User = require('../schemas/userSchema');
 const Auction = require('../schemas/auctionSchema');
+const Table = require('../schemas/tableSchema');
 require('dotenv').config();
 
 const router = express.Router();
@@ -333,6 +334,12 @@ router.get('/summarywin/:auctionId', async (req, res) => {
             return res.status(404).json({ message: "Not found auction." });
         }
 
+        const getTable = await Table.findById(getAuction.tableId);
+
+        if(!getTable){
+            return res.status(404).json({ message: "Not found table." });
+        }
+
         const highestBid = await BidHistory.find({ auctionId })
             .sort({ offerBid: -1 })
             .limit(1);
@@ -342,6 +349,14 @@ router.get('/summarywin/:auctionId', async (req, res) => {
         }
 
         const user = await User.findById(highestBid[0].offerId);
+
+        if (!user) {
+            return res.status(404).json({ message: "Winner not found." });
+        }
+
+        const accessTime = new Date(getAuction.accesstime).toLocaleString('en-US', { timeZone: 'UTC' });
+        const startTime = new Date(getAuction.checkpoint.start).toLocaleString('en-US', { timeZone: 'UTC' });
+        const endTime = new Date(getAuction.checkpoint.end).toLocaleString('en-US', { timeZone: 'UTC' });
 
         const transporter = nodemailer.createTransport({
               service: 'gmail', 
@@ -358,7 +373,8 @@ router.get('/summarywin/:auctionId', async (req, res) => {
             html: `
                 <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                     <h2 style="color: #2a9d8f;">🎉 Congratulations, ${user.name}! 🎉</h2>
-                    <p>We are thrilled to inform you that you have won the auction <strong>${getAuction.title}</strong> with a bid of <strong>$${highestBid[0].offerBid}</strong>.</p>
+                    <p>We are thrilled to inform you that you have won the auction of table <strong>${getTable.name}</strong> with a bid of <strong>$${highestBid[0].offerBid}</strong>.</p>
+                    <p>The auction took place from <strong>${startTime}</strong> to <strong>${endTime}</strong><br/> and you can use table on this time: <strong>${accessTime}</strong>.</p>
                     <p>Please proceed with the payment and contact the auction organizer for further details.</p>
                     <p style="margin: 20px 0;">
                         <a 
