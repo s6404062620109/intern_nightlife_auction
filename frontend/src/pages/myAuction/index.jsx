@@ -150,7 +150,12 @@ function MyAuction() {
                               ).toLocaleString()}
                             </td>
                             <td>
-                              <button onClick={() => handleStopAuction(auction._id)}>Click</button>
+                              {auction.winner.name&&auction.winner.bidValue&&auction.winner.time ? (
+                                <>Auction has end.</>
+                              ) : (
+                                <button onClick={() => handleStopAuction(auction._id)}>Click</button>
+                              )}
+                              
                             </td>
                           </tr>
                         ))}

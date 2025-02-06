@@ -356,6 +356,14 @@ router.get('/summarywin/:auctionId', async (req, res) => {
 
         const datenow = new Date();
 
+        if (getAuction.winner.name || getAuction.winner.bidValue || getAuction.winner.time) {
+            return res.status(401).json({ message: "Auction already has a winner." });
+        }
+
+        if (getAuction.checkpoint.end < datenow) {
+            return res.status(401).json({ message: "Auction has already ended." });
+        }
+
         await getAuction.updateOne({
             $set: {
                 "checkpoint.end": datenow,
