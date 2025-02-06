@@ -85,7 +85,7 @@ function MyAuction() {
       const response = await backend.get(`/bid/summarywin/${auctionId}`);
 
       if (response.status === 200) {
-        setTimeout(() => window.location.reload , 2000);
+        setTimeout(() => window.location.reload() , 2000);
       }
     } catch (error) {
       console.log(error);
