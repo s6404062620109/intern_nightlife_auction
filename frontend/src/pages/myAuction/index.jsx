@@ -80,6 +80,18 @@ function MyAuction() {
     }));
   };
 
+  const handleStopAuction = async (auctionId) => {
+    try {
+      const response = await backend.get(`/bid/summarywin/${auctionId}`);
+
+      if (response.status === 200) {
+        setTimeout(() => window.location.reload , 2000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className={style.container}>
       <h2>Table List</h2>
@@ -114,6 +126,7 @@ function MyAuction() {
                           <th>ราคาเริ่มต้น</th>
                           <th>ราคาสุดท้าย</th>
                           <th>เวลาประมูล</th>
+                          <th>หยุดการประมูล</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -123,7 +136,10 @@ function MyAuction() {
                               {new Date(auction.accesstime).toLocaleString()}
                             </td>
                             <td>{auction.startCoins}</td>
-                            <td></td>
+                            <td>
+                              {auction.highestBid ? auction.highestBid : "-"}
+                              {auction.winner.name ? "-By-"+auction.winner.name : ""}
+                            </td>
                             <td>
                               {new Date(
                                 auction.checkpoint.start
@@ -132,6 +148,9 @@ function MyAuction() {
                               {" "}{new Date(
                                 auction.checkpoint.end
                               ).toLocaleString()}
+                            </td>
+                            <td>
+                              <button onClick={() => handleStopAuction(auction._id)}>Click</button>
                             </td>
                           </tr>
                         ))}

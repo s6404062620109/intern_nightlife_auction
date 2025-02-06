@@ -1,6 +1,7 @@
 const express = require('express');
 const Auction = require('../schemas/auctionSchema');
 const Table = require('../schemas/tableSchema');
+const BidHistory = require('../schemas/bidhistorySchema');
 require('dotenv').config();
 
 const router = express.Router();
@@ -147,9 +148,26 @@ router.get('/readMyAuctions/:venueId', async (req, res) => {
         const tablesWithAuctions = [];
         for (const table of tables) {
             const auctions = await Auction.find({ tableId: table._id });
-            tablesWithAuctions.push({ ...table._doc, auctions });
-        }
 
+            const auctionsWithHighestBids = [];
+
+            for (const auction of auctions) {
+                const highestBid = await BidHistory.findOne({ auctionId: auction._id })
+                    .sort({ offerBid: -1 })
+                    .limit(1)
+                    .lean();
+
+                auctionsWithHighestBids.push({
+                    ...auction._doc,
+                    highestBid: highestBid ? highestBid.offerBid : null,
+                });
+            }
+
+            tablesWithAuctions.push({
+                ...table._doc,
+                auctions: auctionsWithHighestBids,
+            });
+        }
         res.status(200).json({ data: tablesWithAuctions });
         
     } 

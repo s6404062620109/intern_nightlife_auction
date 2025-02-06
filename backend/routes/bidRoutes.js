@@ -354,6 +354,17 @@ router.get('/summarywin/:auctionId', async (req, res) => {
             return res.status(404).json({ message: "Winner not found." });
         }
 
+        const datenow = new Date();
+
+        await getAuction.updateOne({
+            $set: {
+                "checkpoint.end": datenow,
+                "winner.name": user.name,
+                "winner.bidValue": highestBid[0].offerBid,
+                "winner.time": datenow
+            }
+        });
+
         const accessTime = new Date(getAuction.accesstime).toLocaleString('en-US', { timeZone: 'UTC' });
         const startTime = new Date(getAuction.checkpoint.start).toLocaleString('en-US', { timeZone: 'UTC' });
         const endTime = new Date(getAuction.checkpoint.end).toLocaleString('en-US', { timeZone: 'UTC' });
@@ -397,7 +408,6 @@ router.get('/summarywin/:auctionId', async (req, res) => {
                 </div>
             `,
         };
-
 
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {

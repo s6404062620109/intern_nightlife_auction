@@ -25,6 +25,23 @@ const AuctionSchema = new mongoose.Schema(
         type: Number,
         require: true
     },
+    winner: {
+        name: {
+            type: String,
+            require: false,
+            default: null
+        },
+        bidValue: {
+            type: Number,
+            require: false,
+            default: null
+        },
+        time: {
+            type: Date,
+            require: false,
+            default: null
+        }
+    }
   },
   { timestamps: true }
 );

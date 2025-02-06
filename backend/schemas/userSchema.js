@@ -30,6 +30,23 @@ const UserSchema = new mongoose.Schema(
       require: false, 
       default: 0 
     },
+    profileImg: {
+      type: String,
+      require: false,
+      default: null
+    },
+    payment_method: [
+      {
+        name: {
+          type: String,
+          require: false
+        },
+        code: {
+          type: String,
+          require: false,
+        }
+      }
+    ],    
   },
   { timestamps: true }
 );
