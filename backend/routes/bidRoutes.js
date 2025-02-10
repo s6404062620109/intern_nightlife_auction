@@ -1,9 +1,11 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
 const BidHistory = require('../schemas/bidhistorySchema');
 const User = require('../schemas/userSchema');
 const Auction = require('../schemas/auctionSchema');
 const Table = require('../schemas/tableSchema');
+const Venue = require('../schemas/venueSchema');
 require('dotenv').config();
 
 const router = express.Router();
@@ -223,6 +225,75 @@ router.get('/readByEmail/:email', async (req, res) => {
     }
 });
 
+router.get('/readJoinAuctions/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    if(!userId){
+        return res.status(401).json({ message: "UserId are required." });
+    }
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: "Invalid userId format." });
+    }
+
+    try{
+        const myBidAuctions = await BidHistory.find({ offerId: userId }).sort({ time: -1 });
+
+        const latestBids = Object.values(
+            myBidAuctions.reduce((acc, bid) => {
+                if (!acc[bid.auctionId]) acc[bid.auctionId] = bid; 
+                return acc;
+            }, {})
+        );
+
+        if (!latestBids.length) {
+            return res.status(404).json({ message: "No auctions found for this user." });
+        }
+        
+        const result = [];
+        for (const bid of Object.values(latestBids)) {
+            const auction = await Auction.findById(bid.auctionId);
+            if (!auction) continue;
+
+            const table = await Table.findById(auction.tableId);
+            if (!table) continue;
+
+            const venue = await Venue.findById(table.venueId);
+            if (!venue) continue;
+
+            result.push({
+                auctionId: bid.auctionId,
+                bidValue: bid.offerBid,
+                bidTime: bid.time,
+                auctionDetails: {
+                    startCoins: auction.startCoins,
+                    checkpoint: auction.checkpoint,
+                    accesstime: auction.accesstime,
+                    winner: auction.winner
+                },
+                table: {
+                    name: table.name,
+                    seats: table.seats
+                },
+                venue: {
+                    name: venue.name,
+                    address: venue.address,
+                    banner: venue.banner,
+                    contact: venue.contact
+                }
+            });
+        }
+
+        if (!result.length) {
+            return res.status(404).json({ message: "No valid auctions found." });
+        }
+
+        res.status(200).json({ auctions: result });
+
+    } catch(error) {
+        console.log('Error get auction:', error);
+    }
+});
+
 router.put('/update', async (req, res) => {
     const { id, offerBid, time, offerId, auctionId } = req.body;
 
@@ -358,10 +429,6 @@ router.get('/summarywin/:auctionId', async (req, res) => {
 
         if (getAuction.winner.name || getAuction.winner.bidValue || getAuction.winner.time) {
             return res.status(401).json({ message: "Auction already has a winner." });
-        }
-
-        if (getAuction.checkpoint.end < datenow) {
-            return res.status(401).json({ message: "Auction has already ended." });
         }
 
         await getAuction.updateOne({

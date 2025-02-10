@@ -1,0 +1,12 @@
+.container{
+    width: 100%;
+}
+
+.content-wrap{
+    width: 60%;
+    margin: auto;
+}
+
+.content-wrap > h1{
+    color: white;
+}

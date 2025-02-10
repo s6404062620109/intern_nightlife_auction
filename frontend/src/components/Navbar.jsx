@@ -85,7 +85,7 @@ function Navbar() {
                         <li onClick={() => navigate('/myvenue')}>
                           My Venue
                         </li>
-                        <li>
+                        <li onClick={() => navigate(`/bidhistory`)}>
                           Bid History
                         </li>
                         <li onClick={handleLogout}>
