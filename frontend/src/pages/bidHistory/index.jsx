@@ -55,7 +55,7 @@ function bidHistory() {
     };
     fetchBidHistory();
   }, [user.id]);
-
+  
   return (
     <div className={style.container}>
       <div className={style["content-wrap"]}>
@@ -68,6 +68,7 @@ function bidHistory() {
                 name={bid.venue.name}
                 address={bid.venue.address}
                 banner={bid.venue.banner}
+                auctionId={bid.auctionId}
                 checkpoint={bid.auctionDetails.checkpoint}
                 accessTime={bid.auctionDetails.accesstime}
                 table={bid.table}

@@ -271,6 +271,7 @@ router.get('/readJoinAuctions/:userId', async (req, res) => {
                     winner: auction.winner
                 },
                 table: {
+                    id: auction.tableId,
                     name: table.name,
                     seats: table.seats
                 },

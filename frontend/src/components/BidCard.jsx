@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import backend from '../api/backend';
 
 import style from './css/bidcard.module.css';
+import { useNavigate } from 'react-router-dom';
 
 function BidCard({ 
     name, 
     address, 
     banner,
+    auctionId,
     checkpoint,
     accessTime,
     table,
@@ -15,7 +17,8 @@ function BidCard({
     bidTime 
 }) {
     const [ imgPath, setImgPath ] = useState(``);
-    const [ hoverCard, setHoverCard ] = useState(false);
+    const [ showMyBid, setShowMyBid ] = useState(false);
+    const navigate = useNavigate('');
 
     useEffect(() => {
         const fetchBannerImg = async () => {
@@ -33,33 +36,51 @@ function BidCard({
 
         fetchBannerImg();
     }, [banner]);
-
+    
     return (
-        <div className={style["card-wrap"]}>
+        <div className={`${style["card-wrap"]} ${showMyBid ? style["show-bid"] : ""}`}>
             <div className={style.card}
-                onMouseEnter={() => setHoverCard(true)}
-                onMouseLeave={() => setHoverCard(false)}
+                onClick={() => setShowMyBid(!showMyBid)}
             >
                 <img src={imgPath} alt="Venue Banner" className={style.banner} />
                 <div className={style.details}>
-                    <h2 className={style.name}>{name}</h2>
-                    <p className={style.address}>{address}</p>
-                    <p className={style.table}>โต๊ะที่ประมูล {table.name} จำนวนที่นั่ง {table.seats} </p>
-                    <p className={style.accesstime}>เวลาเข้าใช้ {new Date(accessTime).toLocaleString()}</p>
-                    <p className={style.time}>คุณประมูลล่าสุดเมื่อ {new Date(bidTime).toLocaleString()}</p>
-                    <p className={style.bid}>เงินประมูลล่าสุดของคุณ <strong>{bidValue}</strong> coins</p>
-                    <p className={style.checkpoint}>เวลาประมูล {new Date(checkpoint.start).toLocaleString()} - {new Date(checkpoint.end).toLocaleString()}</p>
+                    <h2>{name}</h2>
+                    <p>{address}</p>
+                    <p>โต๊ะที่ประมูล {table.name} จำนวนที่นั่ง {table.seats} </p>
+                    <p>เวลาใช้โต๊ะ {new Date(accessTime).toLocaleString()}</p>
+                    <p>เวลาประมูล {new Date(checkpoint.start).toLocaleString()} - {new Date(checkpoint.end).toLocaleString()}</p>
                 </div>
             </div>
-            {hoverCard && winner && (
-                <div className={style.winner}>
-                    <p>ผู้ชนะการประมูล <strong>{winner.name}</strong></p>
-                    <p>ราคาการประมูล <strong>{winner.bidValue}</strong> coins</p>
-                    <p>เวลา {new Date(winner.time).toLocaleString()}</p>
+            {showMyBid && (
+                <div className={style["Bid-details"]}>
+                    <div className={style.myBid}>
+                        <h3>การประมูลของคุณ</h3>
+                        <p>คุณประมูลล่าสุดเมื่อ {new Date(bidTime).toLocaleString()}</p>
+                        <p>เงินประมูลล่าสุดของคุณ <strong>{bidValue}</strong> coins</p>
+                    </div>
+                    {winner && winner.name ? (
+                        <div className={style.winner}>
+                            <p>ผู้ชนะการประมูล <strong>{winner.name}</strong></p>
+                            <p>ราคาการประมูล <strong>{winner.bidValue}</strong> coins</p>
+                            <p>เวลา {new Date(winner.time).toLocaleString()}</p>
+                        </div>
+                    ) : (
+                        (new Date() > new Date(checkpoint.start) && new Date() < new Date(checkpoint.end)) && (
+                            <div className={style.joinBid}>
+                                <button 
+                                    className={style.bidButton}
+                                    onClick={() => navigate(`/auction/${table.id}/bidauction/${auctionId}`)}
+                                >
+                                    เข้าร่วมการประมูล
+                                </button>
+                            </div>
+                        )
+                    )}
+                    
                 </div>
             )}
         </div>
-    )
+    )    
 }
 
 export default BidCard;
