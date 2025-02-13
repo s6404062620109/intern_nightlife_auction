@@ -10,9 +10,12 @@ function Navbar() {
       email: null,
       name: null,
       role: null,
-      coin: null
+      coin: null,
+      profileImg: null,
+      payment_method: [],
     });
     const [ showOption, setShowOption ] = useState(false);
+     const [imgPath, setImgPath] = useState(``);
     const navigate = useNavigate();  
       
     useEffect(() => {
@@ -30,7 +33,9 @@ function Navbar() {
               email: userData.email,
               name: userData.name,
               role: userData.role,
-              coin: userData.coin
+              coin: userData.coin,
+              profileImg: userData.profileImg,
+              payment_method: userData.payment_method
             });
           }
     
@@ -40,6 +45,23 @@ function Navbar() {
       }
       autherization();
     }, []);
+
+    useEffect(() => {
+      const fetchProfileImg = async () => {
+          try{
+              const response = await backend.get(`/img/getUserProfile/${user.id}/${user.profileImg}`);
+
+              if(response.status === 200){
+                  setImgPath(response.data.url);
+              }
+          }
+          catch(error) {
+              console.log(error);
+          }
+      }
+
+      fetchProfileImg();
+    },[user.profileImg]);
 
     const handleLogout = async () => {
       try {
@@ -79,7 +101,31 @@ function Navbar() {
                 <div className={style["user-info"]}
                   onClick={() => setShowOption(!showOption)}
                 >
-                    <p>{user.name}</p>
+                    <div className={style["user-box"]}>
+                      <div className={style["user-wrap"]}>
+                        <p>
+                          <strong>{user.coin}</strong>
+                          <label>
+                            Coins
+                          </label>
+                        </p>
+                        <p>{user.name}</p>
+                      </div>
+                      
+                      {user.profileImg !== null ? (
+                        <img
+                          alt='User profile img'
+                          src={imgPath}
+                        />
+                      ) : (
+                        <img
+                          alt='User profile img'
+                          src='/User_cicrle.svg'
+                        />
+                      )}
+                      
+                    </div>
+                    
                     { showOption && (
                       <ul className={style["user-option-wrap"]}>
                         <li onClick={() => navigate('/myvenue')}>
@@ -87,6 +133,9 @@ function Navbar() {
                         </li>
                         <li onClick={() => navigate(`/bidhistory`)}>
                           Bid History
+                        </li>
+                        <li onClick={() => navigate(`/profile/${user.id}`)}>
+                          Profile
                         </li>
                         <li onClick={handleLogout}>
                           log out

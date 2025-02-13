@@ -53,12 +53,36 @@ p {
 
 .user-info{
     position: relative;
+    width: 240px;
 }
 .user-info:hover{
     cursor: pointer;
 }
 .user-info > p{
     color: white;
+}
+
+.user-wrap{
+    width: 70%;
+}
+.user-wrap > p{
+    width: 50%;
+}
+.user-wrap p:nth-child(1) > strong{
+    color: yellow;
+}
+.user-wrap p > label{
+    margin-left: 10px;
+}
+.user-box ,.user-wrap{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.user-box > img{
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
 }
 
 .user-option-wrap {

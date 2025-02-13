@@ -288,6 +288,8 @@ router.get('/authorization', async (req, res) => {
         name: user.name,
         role: user.role,
         coin: user.coin,
+        profileImg: user.profileImg,
+        payment_method: user.payment_method
       });
     } else {
       return res.status(404).json({ message: 'User not found' });
