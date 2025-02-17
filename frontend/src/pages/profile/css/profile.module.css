@@ -1,0 +1,29 @@
+.container{
+    width: 100%;
+}
+
+.content-wrap{
+    width: 80%;
+    margin: auto;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+}
+
+.content{
+    width: 70%;
+    margin: auto;
+}
+
+.head{
+    display: flex;
+    align-items: center;
+
+}
+
+.head > img{
+    width: 200px;
+}
+
+.BidHistory-count > p{
+    color: black;
+}

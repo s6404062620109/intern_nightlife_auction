@@ -15,7 +15,7 @@ function Navbar() {
       payment_method: [],
     });
     const [ showOption, setShowOption ] = useState(false);
-     const [imgPath, setImgPath] = useState(``);
+    const [imgPath, setImgPath] = useState(``);
     const navigate = useNavigate();  
       
     useEffect(() => {
@@ -61,7 +61,7 @@ function Navbar() {
       }
 
       fetchProfileImg();
-    },[user.profileImg]);
+    },[user.id, user.profileImg]);
 
     const handleLogout = async () => {
       try {

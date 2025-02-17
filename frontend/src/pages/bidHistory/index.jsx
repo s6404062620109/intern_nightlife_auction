@@ -68,7 +68,7 @@ function bidHistory() {
                 name={bid.venue.name}
                 address={bid.venue.address}
                 banner={bid.venue.banner}
-                auctionId={bid.auctionId}
+                auctionId={bid.auctionId  }
                 checkpoint={bid.auctionDetails.checkpoint}
                 accessTime={bid.auctionDetails.accesstime}
                 table={bid.table}

@@ -53,7 +53,8 @@ p {
 
 .user-info{
     position: relative;
-    width: 240px;
+    display: flex;
+    justify-content: center;
 }
 .user-info:hover{
     cursor: pointer;
@@ -62,22 +63,21 @@ p {
     color: white;
 }
 
-.user-wrap{
-    width: 70%;
-}
-.user-wrap > p{
-    width: 50%;
-}
 .user-wrap p:nth-child(1) > strong{
     color: yellow;
 }
-.user-wrap p > label{
-    margin-left: 10px;
+.user-box{
+    width: 260px;
 }
-.user-box ,.user-wrap{
+.user-box{
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
+}
+.user-wrap{
+    width: 60%;
+    display: flex;
+    justify-content: space-around;
 }
 .user-box > img{
     width: 50px;

@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const User = require('../schemas/userSchema');
 require('dotenv').config();
 
@@ -326,5 +327,43 @@ router.get('/readByOwnerId/:id', async (req, res) => {
     res.status(500).json({ message: 'Error get user:', error });
   }
 });
+
+router.post("/add-payment_methods", async (req, res) => {
+  const { userId, payment_methods } = req.body;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user ID format." });
+  }
+
+  if (!Array.isArray(payment_methods) || payment_methods.length === 0) {
+    return res.status(400).json({ message: "User ID and a valid payment method array are required." });
+  }
+
+  for (let method of payment_methods) {
+    if (!method.name || !method.code) {
+      return res.status(401).json({ message: "Each payment method must have a name and code." });
+    }
+
+    if (typeof method.name !== "string" || typeof method.code !== "string") {
+      return res.status(400).json({ message: "Each payment method name and code must be a string." });
+    }
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.payment_method.push(...payment_methods);
+
+    await user.save();
+    res.status(200).json({ message: "Payment method added successfully", user });
+    
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+});
+
 
 module.exports = router;
