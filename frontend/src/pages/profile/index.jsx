@@ -17,6 +17,8 @@ function Profile() {
   });
   const [bidData, setBidData] = useState([]);
   const [imgPath, setImgPath] = useState(``);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewImg, setPreviewImg] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,31 +80,96 @@ function Profile() {
       };
       fetchBidHistory();
   }, [user.id, user.profileImg]);
+  
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewImg(URL.createObjectURL(file));
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+        alert("Please select a file to upload.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("profileImg", selectedFile);
+
+    try {
+        const response = await backend.post(
+            `/img/upload/userProfile/${user.id}`,
+            formData,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+            }
+        );
+
+        if (response.status === 200) {
+            // Update the user state with the new profile image
+            setUser((prevUser) => ({
+                ...prevUser,
+                profileImg: response.data.url.split("/").pop(), // Extract filename from URL
+            }));
+            setImgPath(response.data.url);
+            setSelectedFile(null);
+            setPreviewImg(null);
+        }
+    } catch (error) {
+        console.log("Upload failed:", error);
+        alert("Upload failed. Please try again.");
+    }
+  };
 
   return (
     <div className={style.container}>
       <div className={style["content-wrap"]}>
         <div className={style.content}>
-          <div className={style.head}>
-            {user.profileImg !== null ? (
-              <img alt="User profile img" src={imgPath} />
-            ) : (
-              <img alt="User profile img" src="/User_cicrle.svg" />
-            )}
+        <div className={style.head}>
+            <input
+              type="file"
+              id="fileInput"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+            <img
+              alt="User profile"
+              src={previewImg || (user.profileImg ? imgPath : "/User_cicrle.svg")}
+              onClick={() => document.getElementById("fileInput").click()}
+              style={{ cursor: "pointer" }}
+            />
             <div className={style.title}>
-              <h1>Name : {user.name}</h1>
+              <h1>{user.name}</h1>
             </div>
-          </div>
+
+            {previewImg && (
+              <div className={style.uploadPreview}>
+                <button onClick={handleUpload}>Upload Image</button>
+              </div>
+            )}
+          </div>          
 
           <div className={style.body}>
             
             <div className={style["user-info"]}>
-                <h2>Money : {user.coin} coins</h2>
-                <h3>Email : {user.email}</h3>
-                <h3>
-                    Password : 
-                    <button onClick={() => navigate('/reset')}>Change Password</button>
-                </h3>
+                <div className={style["money-action"]}>
+                  <h2>Money : {user.coin} coins</h2>
+                  <button>เติมเงิน</button>
+                </div>
+                
+                <div className={style["info-action"]}>
+                  <h3>Email : {user.email}</h3>
+                  
+                  <div className={style["password-wrap"]}>
+                    <h3>Password</h3>
+                    
+                    <button onClick={() => navigate('/reset')}>เปลี่ยนรหัสผ่าน</button>
+                  </div>
+                  
+                </div>
                 
                 <div className={style["BidHistory-count"]}>
                     <p>เข้าร่วมการประมูลอยู่ {bidData.length} สถานที่ </p>
@@ -116,7 +183,7 @@ function Profile() {
                   <table>
                     <thead>
                       <th>ธนาคาร/วิธีชำระเงิน</th>
-                      <th>รหัสบัญชีธนาคาร</th>
+                      <th>เลขบัญชีธนาคาร</th>
                     </thead>
 
                     <tbody>

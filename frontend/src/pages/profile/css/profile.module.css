@@ -1,29 +1,135 @@
-.container{
+.container {
     width: 100%;
-}
-
-.content-wrap{
-    width: 80%;
-    margin: auto;
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 15px;
-}
-
-.content{
-    width: 70%;
-    margin: auto;
-}
-
-.head{
     display: flex;
+    justify-content: center;
     align-items: center;
-
+    padding: 20px;
 }
 
-.head > img{
-    width: 200px;
+.content-wrap {
+    width: 90%;
+    max-width: 800px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
 }
 
-.BidHistory-count > p{
-    color: black;
+.head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.head img {
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ddd;
+}
+
+.title h1 {
+    font-size: 24px;
+    color: #333;
+    margin-top: 15px;
+}
+
+.body {
+    margin-top: 20px;
+}
+
+.user-info {
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+}
+
+.user-info h2, .user-info h3 {
+    color: #555;
+    margin: 10px 0;
+}
+
+.money-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #e3e3e3;
+    border-radius: 8px;
+}
+
+.money-action button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.info-action {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.password-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.password-wrap button {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.BidHistory-count p {
+    color: #222;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.payment-methods {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+}
+
+.payment-methods table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payment-methods th, .payment-methods td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.add-payment-method button {
+    margin-top: 15px;
+    width: 100%;
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
 }
