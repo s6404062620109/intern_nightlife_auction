@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const User = require("../schemas/userSchema");
 const router = express.Router();
 
@@ -9,14 +10,20 @@ router.use("/userimg", express.static(path.join(__dirname, "../usersImg")));
 
 const userStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "usersImg/");
+        const userFolder = path.join(__dirname, `../usersImg/${req.params.userId}`);
+
+        if (!fs.existsSync(userFolder)) {
+            fs.mkdirSync(userFolder, { recursive: true });
+        }
+
+        cb(null, userFolder);
     },
     filename: (req, file, cb) => {
-      cb(null, `${req.params.userId}_${Date.now()}${path.extname(file.originalname)}`);
+        cb(null, `${Date.now()}${path.extname(file.originalname)}`);
     },
 });
 
-const uploadProfile = multer({ userStorage });
+const uploadProfile = multer({ storage: userStorage });
 
 router.get("/getImg/:imgId", (req, res) => {
     const { imgId } = req.params;
@@ -41,19 +48,29 @@ router.post("/upload/userProfile/:userId", uploadProfile.single("profileImg"), a
           return res.status(400).json({ error: "No file uploaded" });
       }
 
-      // Delete the old profile image if it exists
-      if (user.profileImg) {
-          const oldImagePath = path.join(__dirname, 'usersImg', user.profileImg);
-          fs.unlink(oldImagePath, (err) => {
-              if (err) console.error("Failed to delete old image:", err);
-          });
-      }
+      const userFolder = path.join(__dirname, `../usersImg/${userId}`);
 
-      // Update the profileImg attribute
+      const newFilename = req.file.filename;
+
+      fs.readdir(userFolder, (err, files) => {
+        if (err) {
+            console.error("Error reading directory:", err);
+        } else {
+            files.forEach((file) => {
+                const filePath = path.join(userFolder, file);
+                if (file !== newFilename) {
+                    fs.unlink(filePath, (err) => {
+                        if (err) console.error("Error deleting file:", err);
+                    });
+                }
+            });
+        }
+        });
+
       user.profileImg = req.file.filename;
       await user.save();
 
-      res.status(200).json({ url: `/img/userimg/${req.file.filename}` });
+      res.status(200).json({ url: `/img/userimg/${userId}/${req.file.filename}` });
   } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Server error" });
