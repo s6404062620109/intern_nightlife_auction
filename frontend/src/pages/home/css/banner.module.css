@@ -1,0 +1,45 @@
+.container {
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.content-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    opacity: 0;
+    animation: fadeAnimation 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeAnimation {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.change-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.change-button:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.change-button:first-of-type {
+    left: 10px;
+    z-index: 1;
+}
+
+.change-button:last-of-type {
+    right: 10px;
+    z-index: 1;
+}

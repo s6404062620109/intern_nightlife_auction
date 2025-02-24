@@ -50,6 +50,10 @@ router.post("/upload/userProfile/:userId", uploadProfile.single("profileImg"), a
 
       const userFolder = path.join(__dirname, `../usersImg/${userId}`);
 
+      if (!fs.existsSync(userFolder)) {
+        fs.mkdirSync(userFolder, { recursive: true });
+      }
+
       const newFilename = req.file.filename;
 
       fs.readdir(userFolder, (err, files) => {

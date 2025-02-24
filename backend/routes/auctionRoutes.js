@@ -1,5 +1,6 @@
 const express = require('express');
 const Auction = require('../schemas/auctionSchema');
+const Venue = require('../schemas/venueSchema');
 const Table = require('../schemas/tableSchema');
 const BidHistory = require('../schemas/bidhistorySchema');
 require('dotenv').config();
@@ -63,13 +64,48 @@ router.get('/readAll', async (req, res) => {
         if(!auctionGetAll){
             res.status(409).json({ message: "Auction not found." });
         }
-        else{
-            res.status(200).json({ data: auctionGetAll });
-        }
+        
+        res.status(200).json({ data: auctionGetAll });
         
     } 
     catch (error) {
       res.status(500).json({ message: 'Error get auction:', error });
+    }
+});
+
+router.get('/readAuctionForBanner', async (req, res) => {
+    try {
+        const auctionGetAll = await Auction.find();
+
+        if (!auctionGetAll || auctionGetAll.length === 0) {
+            return res.status(404).json({ message: "Auction not found." });
+        }
+
+        const venueMap = new Map();
+
+        for (const auction of auctionGetAll) {
+            const table = await Table.findById(auction.tableId);
+            if (!table) continue;
+
+            const venue = await Venue.findById(table.venueId);
+            if (!venue) continue;
+
+            // Check if venue already exists in the map
+            if (!venueMap.has(venue._id.toString())) {
+                venueMap.set(venue._id.toString(), {
+                    venue,
+                    auctions: []
+                });
+            }
+
+            // Push the auction into the venue's auction list
+            venueMap.get(venue._id.toString()).auctions.push(auction);
+        }
+
+        res.status(200).json({ data: Array.from(venueMap.values()) });
+    } 
+    catch (error) {
+        res.status(500).json({ message: 'Error getting auction', error });
     }
 });
 
