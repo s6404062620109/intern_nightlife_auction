@@ -1,0 +1,77 @@
+.paymentPage {
+    font-family: 'Arial', sans-serif;
+    padding: 40px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pageTitle {
+    text-align: center;
+    font-size: 24px;
+    color: #2a9d8f;
+    margin-bottom: 20px;
+}
+
+.paymentDetails {
+    display: flex;
+    flex-direction: column;
+}
+
+.infoSection, .qrSection {
+    margin-bottom: 20px;
+}
+
+.qrSection{
+    text-align: center;
+}
+
+.title {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.paymentInfo p {
+    font-size: 16px;
+    color: #555;
+}
+
+.qrImage {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.proceedSection {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.proceedButton {
+    background-color: #2a9d8f;
+    color: white;
+    font-size: 16px;
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.proceedButton:hover {
+    background-color: #1f7f6e;
+}

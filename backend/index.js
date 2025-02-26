@@ -42,6 +42,11 @@ app.use('/auction', auctionRoutes);
 const bidRoutes = require('./routes/bidRoutes');
 app.use('/bid', bidRoutes);
 
+// payment enpoints
+const paymentRoutes = require('./routes/paymentRoutes');
+app.use('/payment', paymentRoutes);
+
+// imgRender endpoints
 const imgRoutes = require('./routes/imgRoutes');
 app.use('/img', imgRoutes);
 

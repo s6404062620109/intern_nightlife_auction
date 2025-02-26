@@ -14,17 +14,17 @@ const PaymentSchema = new mongoose.Schema(
     payment_method: {
         name: {
             type: String,
-            require: true
+            require: false
         },
         code: {
             type: String,
-            require: true,
+            require: false
         }
     },
     payment_for: {
         auction: {
             type: Boolean,
-            require: false,
+            require: true,
             default: false
         },
         auctionId: {

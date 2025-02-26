@@ -6,6 +6,7 @@ const User = require('../schemas/userSchema');
 const Auction = require('../schemas/auctionSchema');
 const Table = require('../schemas/tableSchema');
 const Venue = require('../schemas/venueSchema');
+const axios = require('axios');
 require('dotenv').config();
 
 const router = express.Router();
@@ -391,25 +392,23 @@ router.delete('/delete', async (req, res) => {
 router.get('/summarywin/:auctionId', async (req, res) => {
     const { auctionId } = req.params;
 
-    if(!auctionId){
-        return res.status(400).json({ message: 'AuctionId are required.' });
+    if (!auctionId) {
+        return res.status(400).json({ message: 'AuctionId is required.' });
     }
 
-    if(typeof auctionId  !== 'string'){
+    if (typeof auctionId !== 'string') {
         return res.status(400).json({ message: 'AuctionId must be a string.' });
     }
 
-    try{
+    try {
         const getAuction = await Auction.findById(auctionId);
-
-        if(!getAuction){
-            return res.status(404).json({ message: "Not found auction." });
+        if (!getAuction) {
+            return res.status(404).json({ message: "Auction not found." });
         }
 
         const getTable = await Table.findById(getAuction.tableId);
-
-        if(!getTable){
-            return res.status(404).json({ message: "Not found table." });
+        if (!getTable) {
+            return res.status(404).json({ message: "Table not found." });
         }
 
         const highestBid = await BidHistory.find({ auctionId })
@@ -421,7 +420,6 @@ router.get('/summarywin/:auctionId', async (req, res) => {
         }
 
         const user = await User.findById(highestBid[0].offerId);
-
         if (!user) {
             return res.status(404).json({ message: "Winner not found." });
         }
@@ -441,18 +439,14 @@ router.get('/summarywin/:auctionId', async (req, res) => {
             }
         });
 
-        const accessTime = new Date(getAuction.accesstime).toLocaleString('en-US', { timeZone: 'UTC' });
-        const startTime = new Date(getAuction.checkpoint.start).toLocaleString('en-US', { timeZone: 'UTC' });
-        const endTime = new Date(getAuction.checkpoint.end).toLocaleString('en-US', { timeZone: 'UTC' });
-
         const transporter = nodemailer.createTransport({
-              service: 'gmail', 
-              auth: {
+            service: 'gmail',
+            auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS,
-              },
+            },
         });
-        
+
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: user.email,
@@ -460,12 +454,11 @@ router.get('/summarywin/:auctionId', async (req, res) => {
             html: `
                 <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                     <h2 style="color: #2a9d8f;">🎉 Congratulations, ${user.name}! 🎉</h2>
-                    <p>We are thrilled to inform you that you have won the auction of table <strong>${getTable.name}</strong> with a bid of <strong>$${highestBid[0].offerBid}</strong>.</p>
-                    <p>The auction took place from <strong>${startTime}</strong> to <strong>${endTime}</strong><br/> and you can use table on this time: <strong>${accessTime}</strong>.</p>
-                    <p>Please proceed with the payment and contact the auction organizer for further details.</p>
+                    <p>You have won the auction for table <strong>${getTable.name}</strong> with a bid of <strong>$${highestBid[0].offerBid}</strong>.</p>
+                    <p>Please proceed with the payment.</p>
                     <p style="margin: 20px 0;">
                         <a 
-                            href="${process.env.CLIENT_URL}/auction/payment/${auctionId}" 
+                            href="${process.env.FRONTEND_URL}/auction/${auctionId}/payment/" 
                             style="
                                 display: inline-block; 
                                 padding: 10px 20px; 
@@ -479,30 +472,47 @@ router.get('/summarywin/:auctionId', async (req, res) => {
                             Proceed to Payment
                         </a>
                     </p>
-                    <p>If you have any questions, feel free to contact us.</p>
-                    <p style="font-weight: bold;">The Nightlife Auction Team</p>
                 </div>
             `,
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
+        transporter.sendMail(mailOptions, async (error, info) => {
             if (error) {
                 console.error("Error sending email:", error);
                 return res.status(500).json({ message: "Error sending email", error });
             }
 
-            res.status(200).json({
-                highestBid: highestBid[0],
-                winner: {
-                    name: user.name,
-                    email: user.email
-                },
-                emailStatus: "Winner email sent successfully"
-            });
+            console.log("Email sent:", info.response);
+
+            try {
+                const paymentResponse = await axios.post(`${process.env.CLIENT_URL}/payment/post`, {
+                    price: highestBid[0].offerBid,
+                    userId: user._id.toString(),
+                    payment_for: {
+                        auction: true,
+                        auctionId: auctionId
+                    }
+                });
+
+                return res.status(200).json({
+                    highestBid: highestBid[0],
+                    winner: {
+                        name: user.name,
+                        email: user.email
+                    },
+                    emailStatus: "Winner email sent successfully",
+                    paymentStatus: paymentResponse.data
+                });
+
+            } catch (paymentError) {
+                console.error("Payment API Error:", paymentError);
+                return res.status(500).json({ message: "Payment process failed", error: paymentError.response?.data || paymentError.message });
+            }
         });
 
-    } catch(error){
-        res.status(500).json({ message: 'Error get bid history:', error });
+    } catch (error) {
+        console.error("Error in summarywin:", error);
+        res.status(500).json({ message: 'Error processing auction summary', error });
     }
 });
 
