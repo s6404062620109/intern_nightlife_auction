@@ -1,77 +1,102 @@
 .paymentPage {
     font-family: 'Arial', sans-serif;
-    padding: 40px 0;
+    padding: 50px 0;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .container {
-    width: 100%;
+    width: 90%;
     max-width: 800px;
     background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .pageTitle {
     text-align: center;
-    font-size: 24px;
+    font-size: 26px;
     color: #2a9d8f;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .paymentDetails {
     display: flex;
     flex-direction: column;
+    gap: 20px;
 }
 
 .infoSection, .qrSection {
-    margin-bottom: 20px;
-}
-
-.qrSection{
-    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f9f9f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .title {
     font-size: 18px;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .paymentInfo p {
     font-size: 16px;
     color: #555;
+    margin-bottom: 6px;
+}
+
+.qrSection {
+    text-align: center;
 }
 
 .qrImage {
-    max-width: 100%;
+    max-width: 80%;
     height: auto;
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
     padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
+    background-color: #fff;
+    border-radius: 10px;
 }
 
-.proceedSection {
-    text-align: center;
-    margin-top: 30px;
+.uploadSection {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.proceedButton {
+.fileInput {
+    display: block;
+    margin: 15px auto;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.receiptPreview {
+    max-width: 80%;
+    height: auto;
+    border: 2px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    margin-top: 12px;
+}
+
+.uploadButton {
     background-color: #2a9d8f;
     color: white;
-    font-size: 16px;
-    padding: 15px 30px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    display: inline-block;
-    transition: background-color 0.3s ease;
+    font-size: 18px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.proceedButton:hover {
+.uploadButton:hover {
     background-color: #1f7f6e;
+    transform: scale(1.05);
 }
