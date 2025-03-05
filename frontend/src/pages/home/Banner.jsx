@@ -20,7 +20,7 @@ function Banner({ data }) {
     if (venueList.length > 3) {
       const interval = setInterval(() => {
         nextSlide();
-      }, 5000); // Auto change every 5s
+      }, 5000)
 
       return () => clearInterval(interval);
     }
@@ -59,7 +59,10 @@ function Banner({ data }) {
       <h1>Auction Now!</h1>
 
       <div className={style.content}>
-        <button className={style["change-button"]} onClick={prevSlide}>{'<'}</button>
+        {displayVenues.length > 0 && displayVenues.length >= 3 && (
+          <button className={style["change-button"]} onClick={prevSlide}>{'<'}</button>
+        )}
+        
 
         <div className={`${style["content-wrap"]} ${fade ? style.fadeIn : ""}`}>
           {displayVenues.map((item) => (
@@ -72,7 +75,10 @@ function Banner({ data }) {
           ))}
         </div>
 
-        <button className={style["change-button"]} onClick={nextSlide}>{'>'}</button>
+        {displayVenues.length > 0 && displayVenues.length >= 3 && (
+          <button className={style["change-button"]} onClick={nextSlide}>{'>'}</button> 
+        )}
+        
       </div>
       
     </div>

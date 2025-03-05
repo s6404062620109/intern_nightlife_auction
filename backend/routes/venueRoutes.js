@@ -1,45 +1,53 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const Venue = require('../schemas/venueSchema');
 const User = require('../schemas/userSchema');
 require('dotenv').config();
 
 const router = express.Router();
 
-router.post('/post', async (req, res) => {
-    const { name, address, banner, ownerId, contact } = req.body;
-  
-    if (!req.body) {
-        return res.status(400).json({ message: 'Body can not empty.' });
-    }
+const uploadDir = path.join(__dirname, '../Venues');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
-    if (!name || !address || !banner || !ownerId || !contact) {
-        return res.status(400).json({ message: 'Name, address, banner, ownerId, and contact information are required.' });
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        const fileName = `${Date.now()}${ext}`;
+        cb(null, fileName);
     }
+});
+const upload = multer({ storage });
 
-    if(typeof name !== 'string' || typeof address !== 'string' || typeof banner !== 'string' || typeof ownerId !== 'string'){
-        return res.status(400).json({ message: 'name, address, banner and ownerId must be a string.' });
+router.post('/post', upload.single('banner'), async (req, res) => {
+    const { name, address, ownerId, contact } = req.body;
+    const bannerFile = req.file;
+
+    if (!name || !address || !ownerId || !contact || !bannerFile) {
+        return res.status(400).json({ message: 'Name, address, ownerId, contact, and banner file are required.' });
     }
 
     if (!contact.phone || !contact.email || !contact.facebook) {
         return res.status(400).json({ message: 'Contact information must include phone, email, and facebook.' });
     }
 
-    if (typeof contact.phone !== 'string' || typeof contact.email !== 'string' || typeof contact.facebook !== 'string') {
-        return res.status(400).json({ message: 'Contact information fields must be strings.' });
-    }
-    
     try {
         const findOwner = await User.findById(ownerId);
-
-        if(!findOwner){
+        if (!findOwner) {
             return res.status(401).json({ message: 'Not found user.' });
         }
 
         const newVenue = new Venue({
             name,
             address,
-            banner,
+            banner: bannerFile.filename,
             ownerId,
             contact: {
                 phone: contact.phone,
@@ -47,30 +55,13 @@ router.post('/post', async (req, res) => {
                 facebook: contact.facebook
             }
         });
+
         await newVenue.save();
-  
-        res.status(200).json({ message: 'Venue post successfully' });
+        res.status(200).json({ message: 'Venue added successfully!', banner: bannerFile.filename });
     } 
     catch (error) {
-      res.status(500).json({ message: 'Error post venue:', error });
-    }
-});
-
-router.get('/readAll', async (req, res) => {
-  
-    try {
-        const venueGetAll = await Venue.find();
-
-        if(!venueGetAll){
-            res.status(409).json({ message: "Venues not found." });
-        }
-        else{
-            res.status(200).json({ data: venueGetAll });
-        }
-        
-    } 
-    catch (error) {
-      res.status(500).json({ message: 'Error get venue:', error });
+        console.error('Error adding venue:', error);
+        res.status(500).json({ message: 'Error adding venue', error });
     }
 });
 

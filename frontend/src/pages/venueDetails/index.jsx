@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import style from "./css/venueDetail.module.css";
 import backend from "../../api/backend";
-import Edit from "../../components/ManageVenue/edit";
+import Edit from "./Edit";
 
 function VenueDetail() {
   const { id } = useParams();

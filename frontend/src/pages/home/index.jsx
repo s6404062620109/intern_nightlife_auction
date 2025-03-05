@@ -20,7 +20,7 @@ function Home() {
   useEffect(() => {
     fetchAuctions();
   },[]);
-  
+
   return (
     <div className={style.container}>
       <Banner

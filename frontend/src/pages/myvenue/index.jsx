@@ -3,6 +3,7 @@ import backend from '../../api/backend';
 
 import style from './css/myvenue.module.css';
 import VenueCard from '../../components/venueCard';
+import AddVenuePopup from './AddVenuePopup';
 
 function MyVenue() {
   const [user, setUser] = useState({
@@ -13,6 +14,7 @@ function MyVenue() {
       coin: null
   });
   const [ venueData, setVenueData ] = useState([]);
+  const [ isPopupOpen, setIsPopupOpen ] = useState(false);
 
   useEffect(() => {
     const autherization = async () => {
@@ -54,7 +56,7 @@ function MyVenue() {
     }
 
     fetchMyVenue();
-  },[user])
+  },[user]);
 
   return (
     <div className={style.container}>
@@ -77,7 +79,21 @@ function MyVenue() {
             <div>Not have you venue.</div>  
           )}
         </div>
-      </div>      
+      </div>
+
+      <div className={style["add-button-wrap"]}>
+        <button onClick={() => setIsPopupOpen(true)}>
+          <img alt="Add button" src="/Add_round_duotone.svg" />
+          Add Venue
+        </button>
+      </div>
+
+      {isPopupOpen && 
+        <AddVenuePopup 
+          onClose={() => setIsPopupOpen(false)} 
+          ownerId={user.id} 
+        />
+      } 
     </div>
   )
 }
