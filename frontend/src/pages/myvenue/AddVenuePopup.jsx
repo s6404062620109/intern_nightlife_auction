@@ -14,6 +14,7 @@ function AddVenuePopup({ onClose, ownerId }) {
     },
   });
   const [bannerFile, setBannerFile] = useState(null);
+  const [bannerPreview, setBannerPreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
@@ -28,7 +29,12 @@ function AddVenuePopup({ onClose, ownerId }) {
   };
 
   const handleFileChange = (e) => {
-    setBannerFile(e.target.files[0]);
+    const file = e.target.files[0];
+
+    if (file) {
+      setBannerFile(file);
+      setBannerPreview(URL.createObjectURL(file));
+    }
   };
 
   const handleAddVenue = async () => {
@@ -99,6 +105,11 @@ function AddVenuePopup({ onClose, ownerId }) {
           accept="image/*"
           onChange={handleFileChange}
         />
+        {bannerPreview && (
+          <div className={style.imagePreview}>
+            <img src={bannerPreview} alt="Banner Preview" className={style.previewImg} />
+          </div>
+        )}
 
         <label>Phone Number</label>
         <input

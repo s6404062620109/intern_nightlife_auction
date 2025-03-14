@@ -88,6 +88,24 @@ router.get('/readAllMyVenue/:ownerId', async (req, res) => {
     }
 });
 
+router.get('/readAll', async (req, res) => {
+    
+    try {
+        const venueGet = await Venue.find();
+
+        if(!venueGet){
+            res.status(409).json({ message: "Venue not found." });
+        }
+        else{
+            res.status(200).json({ data: venueGet });
+        }
+        
+    } 
+    catch (error) {
+      res.status(500).json({ message: 'Error get venue:', error });
+    }
+});
+
 router.get('/readById/:id', async (req, res) => {
     const { id } = req.params;
 

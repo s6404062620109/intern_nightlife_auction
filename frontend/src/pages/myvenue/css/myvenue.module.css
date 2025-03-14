@@ -25,11 +25,10 @@ h1 {
   gap: 20px;
 }
 
-/* ปุ่ม Add Venue ที่อยู่มุมขวาล่าง */
 .add-button-wrap {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 40px;
+  right: 40px;
 }
 
 .add-button-wrap button {
